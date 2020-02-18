@@ -1,12 +1,12 @@
-const healingPotion = {
-  name: "Healing Potion",
-  category: "health",
-  affect: 2
-};
-const strengthPotion = {
-  name: "Strength Potion",
-  category: "strength",
-  affect: 1
-};
+class Potion {
+  constructor(name, category, affect) {
+    this.name = name;
+    this.category = category;
+    this.affect = affect;
+  }
+}
+
+const healingPotion = new Potion("Healing Potion", "health", 2);
+const strengthPotion = new Potion("Strength Potion", "strength", 2);
 
 export const potions = [healingPotion, strengthPotion];

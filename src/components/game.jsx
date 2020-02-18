@@ -3,54 +3,46 @@ import GameBoard from "./gameBoard";
 import Player from "./player";
 import Inventory from "./inventory";
 import { potions } from "../constants/itemConstants";
-import { dagger } from "../constants/weapons";
 import FightBoard from "./fightBoard";
 import { cockRoach } from "../constants/monsters";
-import { strike, defend } from "../constants/moves";
+import { player } from "../constants/playerConstant";
+import { screen } from "../constants/showScreen";
+import { tripleStrike, stab, wall } from "../constants/moves";
 
 class Game extends Component {
   state = {
-    playerName: "",
-    maxHealth: 3,
-    currentHealth: 3,
-    strength: 1,
-    gold: 0,
-    weapon: dagger,
-    playerInventory: [],
-    playerMoves: [strike, defend],
+    player: player,
     enemies: [cockRoach, cockRoach, cockRoach],
     currentEnemy: null,
-    createCharacter: true,
-    moveCharacter: false,
-    characterFighting: false,
-    characterEvent: false,
+    screen: screen,
     gameBoard: Array(49),
-    playerPosition: 24,
     chatMessage: ""
   };
 
   handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
+    let player = this.state.player;
+    player.setPlayerName(event.target.value);
+    this.setState({ player });
   };
 
   startGame = () => {
-    let createCharacter = this.state.createCharacter;
-    createCharacter = !createCharacter;
-    let moveCharacter = true;
+    let screen = this.state.screen;
+    screen.moveCharacter();
     let gameBoard = this.state.gameBoard;
     for (let i = 0; i < gameBoard.length; i++) {
-      if (i === this.state.playerPosition) {
+      if (i === this.state.player.playerPosition) {
         gameBoard[i] = "Player";
       } else if (i % 10 === 0) {
         gameBoard[i] = "?";
       } else if (i % 12 === 0) {
-        gameBoard[i] = "!";
-      } else {
-        gameBoard[i] = "x";
+        gameBoard[i] = "⚔";
+      } else if (i % 15 === 0) {
+        gameBoard[i] = "👑";
+      } else if (i % 5 === 0) {
+        gameBoard[i] = "💰";
       }
     }
-
-    this.setState({ createCharacter, moveCharacter });
+    this.setState({ screen });
   };
 
   addToChatBox = message => {
@@ -62,26 +54,26 @@ class Game extends Component {
   };
 
   squareProperty = square => {
+    let player = this.state.player;
     switch (square) {
-      case "x":
-        let gold = this.state.gold;
-        gold += 15;
-        this.setState({ gold });
+      case "💰":
+        player.increaseGold(15);
+        this.setState({ player });
         this.addToChatBox("found gold");
         break;
       case "?":
-        let playerInventory = this.state.playerInventory;
         let potion = potions[Math.floor(Math.random() * 2)];
-        playerInventory.push(potion);
-        this.setState({ playerInventory });
+        player.addToInventory(potion);
+        this.setState({ player });
         this.addToChatBox("found " + potion.name);
         break;
-      case "!":
-        this.setState({ characterFighting: true, moveCharacter: false });
+      case "⚔":
+        let screen = this.state.screen;
+        screen.fightScreen();
         let enemies = this.state.enemies;
         let currentEnemy = enemies.shift();
         currentEnemy.currentHealth = currentEnemy.maxHealth;
-        this.setState({ enemies, currentEnemy });
+        this.setState({ enemies, currentEnemy, screen });
         break;
       default:
         break;
@@ -90,37 +82,27 @@ class Game extends Component {
 
   handleMovement = (position, square) => {
     if (
-      position === this.state.playerPosition + 1 ||
-      position === this.state.playerPosition - 1 ||
-      position === this.state.playerPosition + 7 ||
-      position === this.state.playerPosition - 7
+      position === this.state.player.playerPosition + 1 ||
+      position === this.state.player.playerPosition - 1 ||
+      position === this.state.player.playerPosition + 7 ||
+      position === this.state.player.playerPosition - 7
     ) {
       this.squareProperty(square);
       let gameBoard = this.state.gameBoard;
-      let playerPosition = this.state.playerPosition;
-      gameBoard[playerPosition] = "";
+      let player = this.state.player;
+      gameBoard[player.playerPosition] = "";
       gameBoard[position] = "Player";
-      playerPosition = position;
-      this.setState({ gameBoard, playerPosition });
+      player.movePlayer(position);
+      this.setState({ gameBoard, player });
     }
   };
 
   handleInventoryClick = (item, index) => {
-    if (item.category === "health") {
-      let currentHealth = this.state.currentHealth;
-      currentHealth += item.affect;
-      if (currentHealth > this.state.maxHealth) {
-        currentHealth = this.state.maxHealth;
-      }
-      this.setState({ currentHealth });
-    } else if (item.category === "strength") {
-      let strength = this.state.strength;
-      strength += item.affect;
-      this.setState({ strength });
+    let player = this.state.player;
+    if (item.constructor.name === "Potion") {
+      player.drinkPotion(item, index);
     }
-    let playerInventory = this.state.playerInventory;
-    playerInventory.splice(index, 1);
-    this.setState({ playerInventory });
+    this.setState({ player });
   };
 
   checkIfDead(health) {
@@ -143,9 +125,10 @@ class Game extends Component {
   handleEnemyDeath(currentEnemy) {
     this.addToChatBox(currentEnemy.name + " is dead");
     currentEnemy = "";
+    let screen = this.state.screen;
+    screen.endFightScreen();
     this.setState({
-      characterFighting: false,
-      moveCharacter: true,
+      screen,
       currentEnemy
     });
   }
@@ -181,15 +164,16 @@ class Game extends Component {
     }
     if (!isEnemyDead) {
       let currentHealth = this.handleEnemyAttack(
-        this.state.currentHealth,
+        this.state.player.currentHealth,
         block,
         currentEnemy.damage
       );
-
       let isDead = this.checkIfDead(currentHealth);
       if (isDead) {
         console.log("gameOver");
       }
+      let player = this.state.player;
+      player.currentHealth = currentHealth;
       this.setState({ currentEnemy, currentHealth });
     }
   };
@@ -198,7 +182,7 @@ class Game extends Component {
     const disabledOption = this.state.playerName === "";
     return (
       <div className="container-fluid">
-        {this.state.createCharacter ? (
+        {this.state.screen.createCharacter ? (
           <div className="playerInfo ">
             <input
               type="text"
@@ -223,33 +207,33 @@ class Game extends Component {
         ) : (
           <div className="game-container">
             <Player
-              playerName={this.state.playerName}
-              maxHealth={this.state.maxHealth}
-              currentHealth={this.state.currentHealth}
-              gold={this.state.gold}
-              weaponName={this.state.weapon.name}
+              playerName={this.state.player.playerName}
+              maxHealth={this.state.player.maxHealth}
+              currentHealth={this.state.player.currentHealth}
+              gold={this.state.player.gold}
+              weaponName={this.state.player.weapon.name}
             />
             <div className="row">
               <div className="col-3"></div>
               <div className="col-6">
-                {this.state.moveCharacter && (
+                {this.state.screen.characterMoving && (
                   <GameBoard
                     gameBoard={this.state.gameBoard}
                     playerMovement={this.handleMovement}
                   />
                 )}
-                {this.state.characterFighting && (
+                {this.state.screen.characterFighting && (
                   <FightBoard
                     enemy={this.state.currentEnemy}
                     onAttackClick={this.handleAttackClick}
-                    playerMoves={this.state.playerMoves}
-                    playerWeapon={this.state.weapon}
+                    playerMoves={this.state.player.playerMoves}
+                    playerWeapon={this.state.player.weapon}
                   />
                 )}
               </div>
               <div className="col-3">
                 <Inventory
-                  playerInventory={this.state.playerInventory}
+                  playerInventory={this.state.player.playerInventory}
                   onInventoryClick={this.handleInventoryClick}
                 />
               </div>

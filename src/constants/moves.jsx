@@ -26,12 +26,26 @@ export const strike = new Attack(
   "strike",
   "description for strike",
   3,
-  "Dagger",
+  "Sword",
   1
 );
+export const tripleStrike = new Attack(
+  "Triple Strike",
+  "Strikes the opponent 3 times in quick succession",
+  3,
+  "Dagger",
+  3
+);
+export const stab = new Attack("Stab", "Stabby stabby", 6, "Sword", 1);
 export const defend = new Block(
   "defend",
   "defend description",
   2,
   "Big Shield"
+);
+export const wall = new Block(
+  "Wall",
+  "user hides behind shield",
+  10,
+  "Big shield"
 );

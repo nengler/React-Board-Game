@@ -4,12 +4,13 @@ class fightBoard extends Component {
   state = {};
   render() {
     return (
-      <div>
+      <div className="row">
         <h3>{this.props.enemy.name}</h3>
         <b>Health</b> {this.props.enemy.currentHealth}/
         {this.props.enemy.maxHealth}
         {this.props.playerMoves.map((move, index) => (
-          <button
+          <div
+            className="move-cards col-3"
             key={index}
             onClick={() =>
               this.props.onAttackClick(
@@ -19,8 +20,9 @@ class fightBoard extends Component {
               )
             }
           >
-            {move.name}
-          </button>
+            <b>Move:{move.name}</b>
+            <span>{move.description}</span>
+          </div>
         ))}
       </div>
     );
