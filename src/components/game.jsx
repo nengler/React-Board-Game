@@ -15,7 +15,7 @@ class Game extends Component {
     enemies: [cockRoach, cockRoach, cockRoach],
     currentEnemy: null,
     screen: screen,
-    gameBoard: Array(49),
+    gameBoard: Array(49).fill(""),
     chatMessage: ""
   };
 
@@ -31,7 +31,7 @@ class Game extends Component {
     let gameBoard = this.state.gameBoard;
     for (let i = 0; i < gameBoard.length; i++) {
       if (i === this.state.player.playerPosition) {
-        gameBoard[i] = "Player";
+        gameBoard[i] = "You";
       } else if (i % 10 === 0) {
         gameBoard[i] = "?";
       } else if (i % 12 === 0) {
@@ -91,7 +91,7 @@ class Game extends Component {
       let gameBoard = this.state.gameBoard;
       let player = this.state.player;
       gameBoard[player.playerPosition] = "";
-      gameBoard[position] = "Player";
+      gameBoard[position] = "You";
       player.movePlayer(position);
       this.setState({ gameBoard, player });
     }
@@ -206,16 +206,20 @@ class Game extends Component {
           </div>
         ) : (
           <div className="game-container">
-            <Player
-              playerName={this.state.player.playerName}
-              maxHealth={this.state.player.maxHealth}
-              currentHealth={this.state.player.currentHealth}
-              gold={this.state.player.gold}
-              weaponName={this.state.player.weapon.name}
-            />
             <div className="row">
-              <div className="col-3"></div>
-              <div className="col-6">
+              <div className="col-12 player-header">
+                <Player
+                  playerName={this.state.player.playerName}
+                  maxHealth={this.state.player.maxHealth}
+                  currentHealth={this.state.player.currentHealth}
+                  gold={this.state.player.gold}
+                  weaponName={this.state.player.weapon.name}
+                />
+              </div>
+            </div>
+            <div className="row gameplay">
+              <div className="col-2"></div>
+              <div className="col-8 main-component">
                 {this.state.screen.characterMoving && (
                   <GameBoard
                     gameBoard={this.state.gameBoard}
@@ -231,22 +235,26 @@ class Game extends Component {
                   />
                 )}
               </div>
-              <div className="col-3">
+              <div className="col-2">
                 <Inventory
                   playerInventory={this.state.player.playerInventory}
                   onInventoryClick={this.handleInventoryClick}
                 />
               </div>
             </div>
-            <div className="chat">
-              <h3>Messages</h3>
-              <textarea
-                value={this.state.chatMessage}
-                disabled
-                rows="4"
-                cols="100"
-                id="chat_id"
-              ></textarea>
+            <div className="row">
+              <div className="col-3"></div>
+              <div className="col-6">
+                <h3>Messages</h3>
+                <textarea
+                  value={this.state.chatMessage}
+                  disabled
+                  rows="4"
+                  id="chat_id"
+                  className="testt"
+                ></textarea>
+              </div>
+              <div className="col-3"></div>
             </div>
           </div>
         )}

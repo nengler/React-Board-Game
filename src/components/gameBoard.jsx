@@ -27,7 +27,18 @@ class GameBoard extends Component {
   };
 
   render() {
-    return <div>{this.renderBoard()}</div>;
+    return (
+      <div>
+        {this.props.gameBoard.map((square, index) => (
+          <Square
+            key={index}
+            square={square}
+            location={index}
+            handleClick={this.props.playerMovement}
+          />
+        ))}
+      </div>
+    );
   }
 }
 

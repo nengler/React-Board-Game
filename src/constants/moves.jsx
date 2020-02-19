@@ -24,7 +24,7 @@ class Block extends Move {
 
 export const strike = new Attack(
   "strike",
-  "description for strike",
+  "description for strike Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab quidem dolorem eaque quam cumque minus, omnis consequuntur sequi modi illum",
   3,
   "Sword",
   1

@@ -4,10 +4,11 @@ class inventory extends Component {
   state = {};
   render() {
     return (
-      <ul className="inventory-item">
+      <ul>
         {this.props.playerInventory.map((item, index) => (
           <li
             key={index}
+            className="inventory-item"
             onClick={() => this.props.onInventoryClick(item, index)}
           >
             {item.name}

@@ -1,4 +1,37 @@
-.move-cards {
-  cursor: pointer;
+.inside-card {
   background-color: $card-bg;
+  height: 300px;
+  border: 1px solid black;
+}
+
+.ll {
+  justify-content: center;
+}
+
+.outer-card {
+  cursor: pointer;
+}
+
+ul {
+  list-style-type: none;
+  padding-inline-start: 0px;
+}
+
+li {
+  padding: 0 10px;
+}
+
+.card-title {
+  background-color: grey;
+  border-bottom: 1px solid black;
+  font-weight: bolder;
+  font-size: 1.5rem;
+  margin-bottom: 0;
+}
+
+.card-description {
+  position: absolute;
+  bottom: 0;
+  font-size: 0.85rem;
+  border-top: 0.5px solid black;
 }
