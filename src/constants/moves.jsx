@@ -49,3 +49,5 @@ export const wall = new Block(
   10,
   "Big shield"
 );
+export const nullBoy = new Attack("Null Boy", "Relaxing time :)", 0, "", 0);
+export const slither = new Attack("Slither", "we slithering", 1, "", 1);

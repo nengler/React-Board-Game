@@ -2,6 +2,10 @@
   background-color: $card-bg;
   height: 300px;
   border: 1px solid black;
+
+  li {
+    padding: 0 10px;
+  }
 }
 
 .ll {
@@ -15,10 +19,6 @@
 ul {
   list-style-type: none;
   padding-inline-start: 0px;
-}
-
-li {
-  padding: 0 10px;
 }
 
 .card-title {

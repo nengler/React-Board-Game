@@ -26,7 +26,7 @@ class ShowScreen {
   }
   showRewads() {
     this.characterRewards = true;
-    this.characterFighting = false;
+    this.characterMoving = false;
   }
 }
 

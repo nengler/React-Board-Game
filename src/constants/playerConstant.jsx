@@ -31,6 +31,12 @@ class Player {
   movePlayer(newPosition) {
     this.playerPosition = newPosition;
   }
+  changeWeapon(newWeapon) {
+    this.weapon = newWeapon;
+  }
+  addMove(newMove) {
+    this.playerMoves.push(newMove);
+  }
   drinkPotion(potion, index) {
     if (potion.category === "health") {
       this.currentHealth += potion.affect;

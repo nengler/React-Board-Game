@@ -2,12 +2,21 @@ import React, { Component } from "react";
 
 class fightBoard extends Component {
   state = {};
+
   render() {
+    let enemyMove = this.props.enemy.getCurrentMove();
     return (
       <div className="">
-        <h3>{this.props.enemy.name}</h3>
-        <b>Health</b> {this.props.enemy.currentHealth}/
-        {this.props.enemy.maxHealth}
+        <ul>
+          <li>
+            <h3>{this.props.enemy.name}</h3>
+          </li>
+          <li>
+            <b>Health</b> {this.props.enemy.currentHealth}/
+            {this.props.enemy.maxHealth}
+          </li>
+          <li>Move: {enemyMove.name}</li>
+        </ul>
         <div className="row ll">
           {this.props.playerMoves.map((move, index) => (
             <div
@@ -16,6 +25,7 @@ class fightBoard extends Component {
               onClick={() =>
                 this.props.onAttackClick(
                   this.props.enemy,
+                  enemyMove,
                   move,
                   this.props.playerWeapon
                 )

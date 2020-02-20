@@ -1,22 +1,26 @@
 import React, { Component } from "react";
 import GameBoard from "./gameBoard";
 import Player from "./player";
+import TreasureChest from "./treasureChest";
 import Inventory from "./inventory";
 import { potions } from "../constants/itemConstants";
 import FightBoard from "./fightBoard";
-import { cockRoach } from "../constants/monsters";
+import { cockRoach, worm } from "../constants/monsters";
 import { player } from "../constants/playerConstant";
 import { screen } from "../constants/showScreen";
 import { tripleStrike, stab, wall } from "../constants/moves";
+import { sword } from "../constants/weapons";
+import MovesInventory from "./movesInventory";
 
 class Game extends Component {
   state = {
     player: player,
-    enemies: [cockRoach, cockRoach, cockRoach],
+    enemies: [cockRoach, worm, cockRoach],
     currentEnemy: null,
     screen: screen,
     gameBoard: Array(49).fill(""),
-    chatMessage: ""
+    chatMessage: "",
+    chestRewards: [tripleStrike, wall, sword]
   };
 
   handleChange = event => {
@@ -53,8 +57,9 @@ class Game extends Component {
     textarea.scrollTop = textarea.scrollHeight;
   };
 
-  squareProperty = square => {
+  handleSquareProperty = square => {
     let player = this.state.player;
+    let screen = this.state.screen;
     switch (square) {
       case "💰":
         player.increaseGold(15);
@@ -68,12 +73,15 @@ class Game extends Component {
         this.addToChatBox("found " + potion.name);
         break;
       case "⚔":
-        let screen = this.state.screen;
         screen.fightScreen();
         let enemies = this.state.enemies;
         let currentEnemy = enemies.shift();
         currentEnemy.currentHealth = currentEnemy.maxHealth;
         this.setState({ enemies, currentEnemy, screen });
+        break;
+      case "👑":
+        screen.showRewads();
+        this.setState({ screen });
         break;
       default:
         break;
@@ -87,7 +95,7 @@ class Game extends Component {
       position === this.state.player.playerPosition + 7 ||
       position === this.state.player.playerPosition - 7
     ) {
-      this.squareProperty(square);
+      this.handleSquareProperty(square);
       let gameBoard = this.state.gameBoard;
       let player = this.state.player;
       gameBoard[player.playerPosition] = "";
@@ -133,18 +141,19 @@ class Game extends Component {
     });
   }
 
-  handleEnemyAttack(currentHealth, block, currentEnemyDamage) {
-    block -= currentEnemyDamage;
+  handleEnemyAttack(currentHealth, enemyMove, block, currentEnemyDamage) {
+    block -= currentEnemyDamage * enemyMove.damage * enemyMove.amountOfHits;
     if (block < 0) {
       currentHealth += block;
       this.addToChatBox("Player was hit for " + block * -1 + " damage");
       return currentHealth;
+    } else {
+      this.addToChatBox("Player blocked all damage");
     }
-    this.addToChatBox("Player blocked all damage");
     return currentHealth;
   }
 
-  handleAttackClick = (currentEnemy, playerMove, playerWeapon) => {
+  handleAttackClick = (currentEnemy, enemyMove, playerMove, playerWeapon) => {
     let isEnemyDead = false;
     let block = 0;
     if (playerMove.constructor.name === "Attack") {
@@ -165,8 +174,9 @@ class Game extends Component {
     if (!isEnemyDead) {
       let currentHealth = this.handleEnemyAttack(
         this.state.player.currentHealth,
+        enemyMove,
         block,
-        currentEnemy.damage
+        currentEnemy.weapon.damage
       );
       let isDead = this.checkIfDead(currentHealth);
       if (isDead) {
@@ -176,6 +186,10 @@ class Game extends Component {
       player.currentHealth = currentHealth;
       this.setState({ currentEnemy, currentHealth });
     }
+  };
+
+  handleTreasureClick = treasure => {
+    console.log(treasure);
   };
 
   render() {
@@ -218,7 +232,12 @@ class Game extends Component {
               </div>
             </div>
             <div className="row gameplay">
-              <div className="col-2"></div>
+              <div className="col-2">
+                <MovesInventory
+                  weaponName={this.state.player.weapon.name}
+                  moves={this.state.player.playerMoves}
+                />
+              </div>
               <div className="col-8 main-component">
                 {this.state.screen.characterMoving && (
                   <GameBoard
@@ -234,8 +253,14 @@ class Game extends Component {
                     playerWeapon={this.state.player.weapon}
                   />
                 )}
+                {this.state.screen.characterRewards && (
+                  <TreasureChest
+                    treasures={this.state.chestRewards}
+                    onTreasureClick={this.handleTreasureClick}
+                  />
+                )}
               </div>
-              <div className="col-2">
+              <div className="col-2 inventory">
                 <Inventory
                   playerInventory={this.state.player.playerInventory}
                   onInventoryClick={this.handleInventoryClick}

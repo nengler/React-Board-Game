@@ -6,3 +6,5 @@ class Weapon {
 }
 
 export const dagger = new Weapon("Dagger", 1);
+export const claws = new Weapon("Claws", 1);
+export const sword = new Weapon("Sword", 2);
