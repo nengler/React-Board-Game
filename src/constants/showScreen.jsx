@@ -28,6 +28,10 @@ class ShowScreen {
     this.characterRewards = true;
     this.characterMoving = false;
   }
+  endRewards() {
+    this.characterRewards = false;
+    this.characterMoving = true;
+  }
 }
 
 export var screen = new ShowScreen(true, false, false, false, false);

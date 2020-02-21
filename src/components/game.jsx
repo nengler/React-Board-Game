@@ -12,6 +12,18 @@ import { tripleStrike, stab, wall } from "../constants/moves";
 import { sword } from "../constants/weapons";
 import MovesInventory from "./movesInventory";
 
+/*
+TODO:
+cleanup fight screen and messages
+shop
+decorate treasure items
+add rarity to items/weapons
+add boss
+random events
+algorith to randomize floor
+death mechanic
+*/
+
 class Game extends Component {
   state = {
     player: player,
@@ -47,6 +59,7 @@ class Game extends Component {
       }
     }
     this.setState({ screen });
+    //document.getElementById("charMove").focus();
   };
 
   addToChatBox = message => {
@@ -88,20 +101,83 @@ class Game extends Component {
     }
   };
 
-  handleMovement = (position, square) => {
+  checkIfLegalMove = (proposedPosition, playerPosition) => {
+    console.log("he");
     if (
-      position === this.state.player.playerPosition + 1 ||
-      position === this.state.player.playerPosition - 1 ||
-      position === this.state.player.playerPosition + 7 ||
-      position === this.state.player.playerPosition - 7
+      proposedPosition === playerPosition + 1 ||
+      proposedPosition === playerPosition - 1 ||
+      proposedPosition === playerPosition + 7 ||
+      proposedPosition === playerPosition - 7
     ) {
-      this.handleSquareProperty(square);
-      let gameBoard = this.state.gameBoard;
-      let player = this.state.player;
-      gameBoard[player.playerPosition] = "";
-      gameBoard[position] = "You";
-      player.movePlayer(position);
-      this.setState({ gameBoard, player });
+      return true;
+    }
+    return false;
+  };
+
+  movePlayer(position, square) {
+    this.handleSquareProperty(square);
+    let gameBoard = this.state.gameBoard;
+    let player = this.state.player;
+    gameBoard[player.playerPosition] = "";
+    gameBoard[position] = "You";
+    player.movePlayer(position);
+    this.setState({ gameBoard, player });
+  }
+
+  handleMovement = (position, square) => {
+    let isLegalSquare = false;
+    isLegalSquare = this.checkIfLegalMove(
+      position,
+      this.state.player.playerPosition
+    );
+    if (isLegalSquare) {
+      this.movePlayer(position, square);
+    }
+  };
+
+  checkIfLegalSquare = position => {
+    let gameBoard = this.state.gameBoard;
+    if (position < 0 || position > gameBoard.length) {
+      return false;
+    }
+    return true;
+  };
+
+  arrowKeyMovement = e => {
+    console.log(e.key);
+    let position = this.state.player.playerPosition;
+    let square = "";
+    switch (e.key) {
+      case "ArrowUp":
+        position -= 7;
+        if (this.checkIfLegalSquare(position)) {
+          square = this.state.gameBoard[position];
+          this.movePlayer(position, square);
+        }
+        break;
+      case "ArrowDown":
+        position += 7;
+        if (this.checkIfLegalSquare(position)) {
+          square = this.state.gameBoard[position];
+          this.movePlayer(position, square);
+        }
+        break;
+      case "ArrowLeft":
+        position -= 1;
+        if (this.checkIfLegalSquare(position)) {
+          square = this.state.gameBoard[position];
+          this.movePlayer(position, square);
+        }
+        break;
+      case "ArrowRight":
+        position += 1;
+        if (this.checkIfLegalSquare(position)) {
+          square = this.state.gameBoard[position];
+          this.movePlayer(position, square);
+        }
+        break;
+      default:
+        break;
     }
   };
 
@@ -109,6 +185,8 @@ class Game extends Component {
     let player = this.state.player;
     if (item.constructor.name === "Potion") {
       player.drinkPotion(item, index);
+    } else if (item.constructor.name === "Weapon") {
+      player.changeWeaponFromMenu(item, index);
     }
     this.setState({ player });
   };
@@ -122,7 +200,10 @@ class Game extends Component {
 
   handlePlayerAttack(enemyHealth, enemyName, playerMove, playerWeapon) {
     let damage =
-      playerMove.damage * playerMove.amountOfHits * playerWeapon.damage;
+      playerMove.damage *
+      playerMove.amountOfHits *
+      playerWeapon.damageMultiplier;
+    console.log(playerWeapon.damageMultiplier);
     if (playerWeapon.name === playerMove.synergyWeapon) {
       damage = Math.floor(damage * 1.5);
     }
@@ -176,7 +257,7 @@ class Game extends Component {
         this.state.player.currentHealth,
         enemyMove,
         block,
-        currentEnemy.weapon.damage
+        currentEnemy.weapon.damageMultiplier
       );
       let isDead = this.checkIfDead(currentHealth);
       if (isDead) {
@@ -188,8 +269,19 @@ class Game extends Component {
     }
   };
 
-  handleTreasureClick = treasure => {
-    console.log(treasure);
+  handleTreasureClick = treasureItem => {
+    let player = this.state.player;
+    let screen = this.state.screen;
+    if (
+      treasureItem.constructor.name === "Attack" ||
+      treasureItem.constructor.name === "Block"
+    ) {
+      player.addMove(treasureItem);
+    } else if (treasureItem.constructor.name === "Weapon") {
+      player.changeWeapon(treasureItem);
+    }
+    screen.endRewards();
+    this.setState({ player, screen });
   };
 
   render() {
@@ -240,10 +332,12 @@ class Game extends Component {
               </div>
               <div className="col-8 main-component">
                 {this.state.screen.characterMoving && (
-                  <GameBoard
-                    gameBoard={this.state.gameBoard}
-                    playerMovement={this.handleMovement}
-                  />
+                  <div id="charMove" onKeyDown={e => this.arrowKeyMovement(e)}>
+                    <GameBoard
+                      gameBoard={this.state.gameBoard}
+                      playerMovement={this.handleMovement}
+                    />
+                  </div>
                 )}
                 {this.state.screen.characterFighting && (
                   <FightBoard

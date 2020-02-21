@@ -32,7 +32,15 @@ class Player {
     this.playerPosition = newPosition;
   }
   changeWeapon(newWeapon) {
+    let oldWeapon = this.weapon;
     this.weapon = newWeapon;
+    this.playerInventory.push(oldWeapon);
+  }
+  changeWeaponFromMenu(newWeapon, index) {
+    let oldWeapon = this.weapon;
+    this.weapon = newWeapon;
+    this.playerInventory.push(oldWeapon);
+    this.playerInventory.splice(index, 1);
   }
   addMove(newMove) {
     this.playerMoves.push(newMove);
@@ -50,4 +58,4 @@ class Player {
   }
 }
 
-export const player = new Player("", 3, [strike, defend], 24, dagger, 0);
+export const player = new Player("", 10, [strike, defend], 24, dagger, 0);
