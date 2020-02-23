@@ -117,7 +117,9 @@ class fightBoard extends Component {
             <b>Mana:</b> {this.props.currentMana} / {this.props.maxMana}
           </span>
           <br />
-          Current Block: {this.props.block}
+          <span className="blocking">
+            <b>Block:</b> {this.props.block}
+          </span>
         </div>
       </div>
     );

@@ -12,7 +12,14 @@ class MovesInventory extends Component {
     return (
       <ul>
         <li>
-          <b>Weapon:</b> {this.props.weaponName}
+          <b>Weapon:</b>
+        </li>
+        <li className="movePreview Weapon">
+          <span>
+            {this.props.weapon.name}
+            <br />
+            Dmg Multiplier: {this.props.weapon.damageMultiplier}
+          </span>
         </li>
         <li>
           <b>Moves:</b>

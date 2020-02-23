@@ -14,9 +14,7 @@ import MovesInventory from "./movesInventory";
 
 /*
 TODO:
-cleanup fight screen and messages
 shop
-decorate treasure items
 add rarity to items/weapons
 add boss
 random events
@@ -351,7 +349,7 @@ class Game extends Component {
                 <div className="row gameplay">
                   <div className="col-2">
                     <MovesInventory
-                      weaponName={this.state.player.weapon.name}
+                      weapon={this.state.player.weapon}
                       moves={this.state.player.playerMoves}
                     />
                   </div>
