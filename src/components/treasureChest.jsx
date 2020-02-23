@@ -3,7 +3,6 @@ import React, { Component } from "react";
 class TreasureChest extends Component {
   state = {};
   render() {
-    console.log(this.props.treasures);
     return (
       <div className="row">
         {this.props.treasures.map((treasure, index) => (

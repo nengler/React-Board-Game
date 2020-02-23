@@ -1,15 +1,33 @@
 .inside-card {
   background-color: $card-bg;
   height: 300px;
+  width: 200px;
   border: 1px solid black;
+  cursor: pointer;
+  margin: 0 0.5rem;
+  position: relative;
 
   li {
     padding: 0 10px;
   }
 }
 
-.ll {
+.attack-card {
+  background-color: $attack-bg;
+}
+
+.block-card {
+  background-color: $block-bg;
+}
+
+.enemy-name {
+  margin-bottom: 0;
+}
+
+.flex-parent {
+  display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .outer-card {
@@ -21,8 +39,7 @@ ul {
   padding-inline-start: 0px;
 }
 
-.card-title {
-  background-color: grey;
+.card-header-fight {
   border-bottom: 1px solid black;
   font-weight: bolder;
   font-size: 1.5rem;
@@ -34,4 +51,29 @@ ul {
   bottom: 0;
   font-size: 0.85rem;
   border-top: 0.5px solid black;
+}
+
+.end-turn-button {
+  padding: 131px 0;
+  position: absolute;
+  right: 15px;
+}
+
+.card-mana-cost {
+  text-align: left;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.useable {
+  color: $useable;
+}
+
+.not-useable {
+  color: $disabled;
+}
+
+.show-mana {
+  color: $useable;
+  font-size: 1.1rem;
 }

@@ -11,13 +11,13 @@ class Monster {
     this.monsterMoveIndex = 0;
   }
   getCurrentMove() {
-    let retMove = this.monsterMoves[this.monsterMoveIndex];
-    if (retMove == null) {
-      this.monsterMoveIndex = 0;
-      retMove = this.monsterMoves[this.monsterMoveIndex];
-    }
+    return this.monsterMoves[this.monsterMoveIndex];
+  }
+  goToNextMove() {
     this.monsterMoveIndex++;
-    return retMove;
+    if (this.monsterMoves[this.monsterMoveIndex] == null) {
+      this.monsterMoveIndex = 0;
+    }
   }
 }
 

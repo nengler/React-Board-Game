@@ -59,15 +59,15 @@ class Game extends Component {
       }
     }
     this.setState({ screen });
-    //document.getElementById("charMove").focus();
   };
 
   addToChatBox = message => {
     let chatMessage = this.state.chatMessage;
     chatMessage += message + "\n";
-    this.setState({ chatMessage });
-    var textarea = document.getElementById("chat_id");
-    textarea.scrollTop = textarea.scrollHeight;
+    this.setState({ chatMessage }, () => {
+      var textarea = document.getElementById("chat_id");
+      textarea.scrollTop = textarea.scrollHeight;
+    });
   };
 
   handleSquareProperty = square => {
@@ -102,7 +102,6 @@ class Game extends Component {
   };
 
   checkIfLegalMove = (proposedPosition, playerPosition) => {
-    console.log("he");
     if (
       proposedPosition === playerPosition + 1 ||
       proposedPosition === playerPosition - 1 ||
@@ -144,7 +143,6 @@ class Game extends Component {
   };
 
   arrowKeyMovement = e => {
-    console.log(e.key);
     let position = this.state.player.playerPosition;
     let square = "";
     switch (e.key) {
@@ -198,21 +196,40 @@ class Game extends Component {
     return true;
   }
 
-  handlePlayerAttack(enemyHealth, enemyName, playerMove, playerWeapon) {
-    let damage =
-      playerMove.damage *
-      playerMove.amountOfHits *
-      playerWeapon.damageMultiplier;
-    console.log(playerWeapon.damageMultiplier);
-    if (playerWeapon.name === playerMove.synergyWeapon) {
-      damage = Math.floor(damage * 1.5);
+  handleEnemyAttack = (enemyMove, block, currentEnemyDamage) => {
+    let player = this.state.player;
+    let currentEnemy = this.state.currentEnemy;
+    block -= currentEnemyDamage * enemyMove.damage * enemyMove.amountOfHits;
+    if (block < 0) {
+      player.currentHealth += block;
+      this.addToChatBox("Player was hit for " + block * -1 + " damage");
+    } else {
+      this.addToChatBox("Player blocked all damage");
     }
-    this.addToChatBox("player hit " + enemyName + " for " + damage);
-    return (enemyHealth -= damage);
-  }
+    player.endTurn();
+    currentEnemy.goToNextMove();
+    this.setState({ player, currentEnemy });
+  };
+
+  handleBlockCardClick = (playerMove, playerWeapon, currentMana) => {
+    if (currentMana >= playerMove.manaCost) {
+      let player = this.state.player;
+      let block = 0;
+      block += playerMove.blockAmount;
+      if (playerWeapon === playerMove.synergyItem) {
+        block *= 1.5;
+      }
+      player.addBlock(block);
+      let message = "Player increased block by " + block;
+      player.decreaseCurrentMana(playerMove.manaCost);
+      this.setState({ player });
+      this.addToChatBox(message);
+    } else if (currentMana < playerMove.manaCost) {
+      this.addToChatBox("not enough mana");
+    }
+  };
 
   handleEnemyDeath(currentEnemy) {
-    this.addToChatBox(currentEnemy.name + " is dead");
     currentEnemy = "";
     let screen = this.state.screen;
     screen.endFightScreen();
@@ -222,50 +239,41 @@ class Game extends Component {
     });
   }
 
-  handleEnemyAttack(currentHealth, enemyMove, block, currentEnemyDamage) {
-    block -= currentEnemyDamage * enemyMove.damage * enemyMove.amountOfHits;
-    if (block < 0) {
-      currentHealth += block;
-      this.addToChatBox("Player was hit for " + block * -1 + " damage");
-      return currentHealth;
-    } else {
-      this.addToChatBox("Player blocked all damage");
+  calculateDamage(playerMove, playerWeapon) {
+    let damage =
+      playerMove.damage *
+      playerMove.amountOfHits *
+      playerWeapon.damageMultiplier;
+    if (playerWeapon.name === playerMove.synergyItem) {
+      damage = Math.floor(damage * 1.5);
     }
-    return currentHealth;
+    return damage;
   }
 
-  handleAttackClick = (currentEnemy, enemyMove, playerMove, playerWeapon) => {
-    let isEnemyDead = false;
-    let block = 0;
-    if (playerMove.constructor.name === "Attack") {
-      currentEnemy.currentHealth = this.handlePlayerAttack(
-        currentEnemy.currentHealth,
-        currentEnemy.name,
-        playerMove,
-        playerWeapon
-      );
-      isEnemyDead = this.checkIfDead(currentEnemy.currentHealth);
+  handleAttackCardClick = (
+    currentEnemy,
+    playerMove,
+    playerWeapon,
+    currentMana
+  ) => {
+    if (currentMana >= playerMove.manaCost) {
+      let player = this.state.player;
+      let message = "";
+      player.decreaseCurrentMana(playerMove.manaCost);
+      let damage = this.calculateDamage(playerMove, playerWeapon);
+      message += "player hit " + currentEnemy.name + " for " + damage;
+      currentEnemy.currentHealth -= damage;
+      let isEnemyDead = this.checkIfDead(currentEnemy.currentHealth);
       if (isEnemyDead) {
         this.handleEnemyDeath(currentEnemy);
+        player.endTurn();
+        message += "\n" + currentEnemy.name + " was slain";
+      } else {
+        this.setState({ currentEnemy });
       }
-    } else if (playerMove.constructor.name === "Block") {
-      block += playerMove.blockAmount;
-      this.addToChatBox("player blocked for " + block);
-    }
-    if (!isEnemyDead) {
-      let currentHealth = this.handleEnemyAttack(
-        this.state.player.currentHealth,
-        enemyMove,
-        block,
-        currentEnemy.weapon.damageMultiplier
-      );
-      let isDead = this.checkIfDead(currentHealth);
-      if (isDead) {
-        console.log("gameOver");
-      }
-      let player = this.state.player;
-      player.currentHealth = currentHealth;
-      this.setState({ currentEnemy, currentHealth });
+      this.addToChatBox(message);
+    } else if (currentMana < playerMove.manaCost) {
+      this.addToChatBox("not enough mana");
     }
   };
 
@@ -319,48 +327,62 @@ class Game extends Component {
                   maxHealth={this.state.player.maxHealth}
                   currentHealth={this.state.player.currentHealth}
                   gold={this.state.player.gold}
-                  weaponName={this.state.player.weapon.name}
                 />
               </div>
             </div>
-            <div className="row gameplay">
-              <div className="col-2">
-                <MovesInventory
-                  weaponName={this.state.player.weapon.name}
-                  moves={this.state.player.playerMoves}
-                />
-              </div>
-              <div className="col-8 main-component">
-                {this.state.screen.characterMoving && (
-                  <div id="charMove" onKeyDown={e => this.arrowKeyMovement(e)}>
-                    <GameBoard
-                      gameBoard={this.state.gameBoard}
-                      playerMovement={this.handleMovement}
-                    />
-                  </div>
-                )}
-                {this.state.screen.characterFighting && (
+            {this.state.screen.characterFighting ? (
+              <div className="row">
+                <div className="col-12 fightBoard-div">
                   <FightBoard
                     enemy={this.state.currentEnemy}
-                    onAttackClick={this.handleAttackClick}
+                    onAttackCardClick={this.handleAttackCardClick}
+                    onBlockCardClick={this.handleBlockCardClick}
+                    onEnemyAttack={this.handleEnemyAttack}
                     playerMoves={this.state.player.playerMoves}
                     playerWeapon={this.state.player.weapon}
+                    currentMana={this.state.player.currentMana}
+                    maxMana={this.state.player.maxMana}
+                    block={this.state.player.block}
                   />
-                )}
-                {this.state.screen.characterRewards && (
-                  <TreasureChest
-                    treasures={this.state.chestRewards}
-                    onTreasureClick={this.handleTreasureClick}
-                  />
-                )}
+                </div>
               </div>
-              <div className="col-2 inventory">
-                <Inventory
-                  playerInventory={this.state.player.playerInventory}
-                  onInventoryClick={this.handleInventoryClick}
-                />
+            ) : (
+              <div>
+                <div className="row gameplay">
+                  <div className="col-2">
+                    <MovesInventory
+                      weaponName={this.state.player.weapon.name}
+                      moves={this.state.player.playerMoves}
+                    />
+                  </div>
+                  <div className="col-8 main-component">
+                    {this.state.screen.characterMoving && (
+                      <div
+                        id="charMove"
+                        onKeyDown={e => this.arrowKeyMovement(e)}
+                      >
+                        <GameBoard
+                          gameBoard={this.state.gameBoard}
+                          playerMovement={this.handleMovement}
+                        />
+                      </div>
+                    )}
+                    {this.state.screen.characterRewards && (
+                      <TreasureChest
+                        treasures={this.state.chestRewards}
+                        onTreasureClick={this.handleTreasureClick}
+                      />
+                    )}
+                  </div>
+                  <div className="col-2 inventory">
+                    <Inventory
+                      playerInventory={this.state.player.playerInventory}
+                      onInventoryClick={this.handleInventoryClick}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
             <div className="row">
               <div className="col-3"></div>
               <div className="col-6">

@@ -5,6 +5,7 @@ class Player {
   constructor(
     playerName,
     maxHealth,
+    maxMana,
     playerMoves,
     playerPosition,
     weapon,
@@ -13,11 +14,14 @@ class Player {
     this.playerName = playerName;
     this.currentHealth = maxHealth;
     this.maxHealth = maxHealth;
+    this.maxMana = maxMana;
+    this.currentMana = maxMana;
     this.playerInventory = [];
     this.playerMoves = playerMoves;
     this.playerPosition = playerPosition;
     this.weapon = weapon;
     this.gold = gold;
+    this.block = 0;
   }
   setPlayerName(newName) {
     this.playerName = newName;
@@ -52,10 +56,19 @@ class Player {
         this.currentHealth = this.maxHealth;
       }
     } else if (potion.category === "strength") {
-      console.log("heyo");
     }
     this.playerInventory.splice(index, 1);
   }
+  addBlock(blockAmount) {
+    this.block += blockAmount;
+  }
+  endTurn() {
+    this.block = 0;
+    this.currentMana = this.maxMana;
+  }
+  decreaseCurrentMana(manaCost) {
+    this.currentMana -= manaCost;
+  }
 }
 
-export const player = new Player("", 10, [strike, defend], 24, dagger, 0);
+export const player = new Player("", 10, 2, [strike, defend], 24, dagger, 0);

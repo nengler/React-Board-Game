@@ -17,11 +17,17 @@ class MovesInventory extends Component {
         <li>
           <b>Moves:</b>
         </li>
-        {this.props.moves.map((move, index) => (
-          <span key={index} className={this.getClassName(move)}>
-            {move.name}
-          </span>
-        ))}
+        <ul>
+          {this.props.moves.map((move, index) => (
+            <li key={index} className={this.getClassName(move)}>
+              {move.name}
+              <br />
+              Mana Cost: {move.manaCost}
+              <br />
+              Synergy: {move.synergyItem}
+            </li>
+          ))}
+        </ul>
       </ul>
     );
   }

@@ -1,4 +1,27 @@
 .player-header {
-  background-color: $player-bg;
+  border-bottom: 1px solid $player-bg;
   width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.player-name {
+  margin-right: 2rem;
+}
+
+.player-health {
+  margin: 0 2rem;
+}
+
+.player-gold {
+  color: gold;
+  margin-left: 2rem;
+}
+
+.good-health {
+  color: green;
+}
+
+.bad-health {
+  color: red;
 }
