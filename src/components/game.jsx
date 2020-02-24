@@ -3,19 +3,22 @@ import GameBoard from "./gameBoard";
 import Player from "./player";
 import TreasureChest from "./treasureChest";
 import Inventory from "./inventory";
+import Shop from "./shop";
 import { potions } from "../constants/itemConstants";
 import FightBoard from "./fightBoard";
 import { cockRoach, worm } from "../constants/monsters";
 import { player } from "../constants/playerConstant";
 import { screen } from "../constants/showScreen";
-import { tripleStrike, stab, wall } from "../constants/moves";
 import { sword } from "../constants/weapons";
 import MovesInventory from "./movesInventory";
+import { playerMoveArray } from "../constants/moves";
+import { weaponArray } from "../constants/weapons";
+import { tripleStrike, wall } from "../constants/moves";
+import { treasure } from "../constants/treasure";
+import { shop } from "../constants/shop";
 
 /*
 TODO:
-shop
-add rarity to items/weapons
 add boss
 random events
 algorith to randomize floor
@@ -30,7 +33,8 @@ class Game extends Component {
     screen: screen,
     gameBoard: Array(49).fill(""),
     chatMessage: "",
-    chestRewards: [tripleStrike, wall, sword]
+    treasure: treasure,
+    shop: shop
   };
 
   handleChange = event => {
@@ -41,6 +45,12 @@ class Game extends Component {
 
   startGame = () => {
     let screen = this.state.screen;
+    let treasure = this.state.treasure;
+    let shop = this.state.shop;
+    treasure.itemsToAddToTreasure(playerMoveArray);
+    treasure.itemsToAddToTreasure(weaponArray);
+    shop.itemsToAddToShop(playerMoveArray);
+    shop.itemsToAddToShop(weaponArray);
     screen.moveCharacter();
     let gameBoard = this.state.gameBoard;
     for (let i = 0; i < gameBoard.length; i++) {
@@ -54,9 +64,11 @@ class Game extends Component {
         gameBoard[i] = "👑";
       } else if (i % 5 === 0) {
         gameBoard[i] = "💰";
+      } else if (i === gameBoard.length - 2 || i === 1) {
+        gameBoard[i] = "🛍️";
       }
     }
-    this.setState({ screen });
+    this.setState({ screen, treasure });
   };
 
   addToChatBox = message => {
@@ -92,6 +104,10 @@ class Game extends Component {
         break;
       case "👑":
         screen.showRewads();
+        this.setState({ screen });
+        break;
+      case "🛍️":
+        screen.showShop();
         this.setState({ screen });
         break;
       default:
@@ -141,39 +157,41 @@ class Game extends Component {
   };
 
   arrowKeyMovement = e => {
-    let position = this.state.player.playerPosition;
-    let square = "";
-    switch (e.key) {
-      case "ArrowUp":
-        position -= 7;
-        if (this.checkIfLegalSquare(position)) {
-          square = this.state.gameBoard[position];
-          this.movePlayer(position, square);
-        }
-        break;
-      case "ArrowDown":
-        position += 7;
-        if (this.checkIfLegalSquare(position)) {
-          square = this.state.gameBoard[position];
-          this.movePlayer(position, square);
-        }
-        break;
-      case "ArrowLeft":
-        position -= 1;
-        if (this.checkIfLegalSquare(position)) {
-          square = this.state.gameBoard[position];
-          this.movePlayer(position, square);
-        }
-        break;
-      case "ArrowRight":
-        position += 1;
-        if (this.checkIfLegalSquare(position)) {
-          square = this.state.gameBoard[position];
-          this.movePlayer(position, square);
-        }
-        break;
-      default:
-        break;
+    if (this.state.screen.characterMoving === true) {
+      let position = this.state.player.playerPosition;
+      let square = "";
+      switch (e.key) {
+        case "ArrowUp":
+          position -= 7;
+          if (this.checkIfLegalSquare(position)) {
+            square = this.state.gameBoard[position];
+            this.movePlayer(position, square);
+          }
+          break;
+        case "ArrowDown":
+          position += 7;
+          if (this.checkIfLegalSquare(position)) {
+            square = this.state.gameBoard[position];
+            this.movePlayer(position, square);
+          }
+          break;
+        case "ArrowLeft":
+          position -= 1;
+          if (this.checkIfLegalSquare(position)) {
+            square = this.state.gameBoard[position];
+            this.movePlayer(position, square);
+          }
+          break;
+        case "ArrowRight":
+          position += 1;
+          if (this.checkIfLegalSquare(position)) {
+            square = this.state.gameBoard[position];
+            this.movePlayer(position, square);
+          }
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -209,14 +227,18 @@ class Game extends Component {
     this.setState({ player, currentEnemy });
   };
 
+  calculateBlock(move, weapon) {
+    let block = move.blockAmount * weapon.blockMultiplier;
+    if (weapon === move.synergyItem) {
+      block *= 1.5;
+    }
+    return Math.floor(block);
+  }
+
   handleBlockCardClick = (playerMove, playerWeapon, currentMana) => {
     if (currentMana >= playerMove.manaCost) {
       let player = this.state.player;
-      let block = 0;
-      block += playerMove.blockAmount;
-      if (playerWeapon === playerMove.synergyItem) {
-        block *= 1.5;
-      }
+      let block = this.calculateBlock(playerMove, playerWeapon);
       player.addBlock(block);
       let message = "Player increased block by " + block;
       player.decreaseCurrentMana(playerMove.manaCost);
@@ -243,9 +265,9 @@ class Game extends Component {
       playerMove.amountOfHits *
       playerWeapon.damageMultiplier;
     if (playerWeapon.name === playerMove.synergyItem) {
-      damage = Math.floor(damage * 1.5);
+      damage = damage * 1.5;
     }
-    return damage;
+    return Math.floor(damage);
   }
 
   handleAttackCardClick = (
@@ -278,6 +300,7 @@ class Game extends Component {
   handleTreasureClick = treasureItem => {
     let player = this.state.player;
     let screen = this.state.screen;
+    let treasure = this.state.treasure;
     if (
       treasureItem.constructor.name === "Attack" ||
       treasureItem.constructor.name === "Block"
@@ -287,13 +310,54 @@ class Game extends Component {
       player.changeWeapon(treasureItem);
     }
     screen.endRewards();
-    this.setState({ player, screen });
+    treasure.increaseIndex();
+    this.setState({ player, screen, treasure });
   };
+
+  handleShopClick = (shopItem, index) => {
+    if (player.gold >= shopItem.cost) {
+      let player = this.state.player;
+      let shop = this.state.shop;
+      switch (shopItem.constructor.name) {
+        case "Attack":
+          player.addMove(shopItem);
+          break;
+        case "Block":
+          player.addMove(shopItem);
+          break;
+        case "Weapon":
+          player.changeWeapon(shopItem);
+          break;
+      }
+      shop.shopItems.splice(index, 1);
+      shop.decreaseItemsToShow();
+      console.log(shop);
+      this.setState({ player, shop });
+    } else {
+      this.addToChatBox("Cant afford " + shopItem.name);
+    }
+  };
+
+  handleExitShopClick = () => {
+    let screen = this.state.screen;
+    let shop = this.state.shop;
+    shop.resetItemsToShow();
+    screen.leaveShop();
+    this.setState({ screen });
+  };
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.arrowKeyMovement);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.arrowKeyMovement);
+  }
 
   render() {
     const disabledOption = this.state.playerName === "";
     return (
-      <div className="container-fluid">
+      <div className="container-fluid" ref="nv">
         {this.state.screen.createCharacter ? (
           <div className="playerInfo ">
             <input
@@ -355,20 +419,23 @@ class Game extends Component {
                   </div>
                   <div className="col-8 main-component">
                     {this.state.screen.characterMoving && (
-                      <div
-                        id="charMove"
-                        onKeyDown={e => this.arrowKeyMovement(e)}
-                      >
-                        <GameBoard
-                          gameBoard={this.state.gameBoard}
-                          playerMovement={this.handleMovement}
-                        />
-                      </div>
+                      <GameBoard
+                        gameBoard={this.state.gameBoard}
+                        playerMovement={this.handleMovement}
+                      />
                     )}
                     {this.state.screen.characterRewards && (
                       <TreasureChest
-                        treasures={this.state.chestRewards}
+                        treasure={this.state.treasure}
                         onTreasureClick={this.handleTreasureClick}
+                      />
+                    )}
+                    {this.state.screen.characterShop && (
+                      <Shop
+                        shop={this.state.shop}
+                        playersMoney={this.state.player.gold}
+                        onShopClick={this.handleShopClick}
+                        exitShop={this.handleExitShopClick}
                       />
                     )}
                   </div>

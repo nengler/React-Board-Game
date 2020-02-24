@@ -3,9 +3,10 @@ import React, { Component } from "react";
 class TreasureChest extends Component {
   state = {};
   render() {
+    const showcaseTreasure = this.props.treasure.getTreasure();
     return (
       <div className="treasure-flex">
-        {this.props.treasures.map((treasure, index) => (
+        {showcaseTreasure.map((treasure, index) => (
           <div key={index} onClick={() => this.props.onTreasureClick(treasure)}>
             {treasure.constructor.name === "Attack" && (
               <div className="inside-card ">
@@ -56,11 +57,8 @@ class TreasureChest extends Component {
                     {treasure.name}
                   </li>
                   <span>
-                    <li>
-                      <span>
-                        Damage Multiplier: {treasure.damageMultiplier}
-                      </span>
-                    </li>
+                    <li>Damage Multiplier: {treasure.damageMultiplier}</li>
+                    <li>Block Multiplier: {treasure.blockMultiplier}</li>
                   </span>
                 </ul>
               </div>

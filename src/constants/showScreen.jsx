@@ -4,13 +4,15 @@ class ShowScreen {
     characterMoving,
     characterFighting,
     characterEvent,
-    characterRewards
+    characterRewards,
+    characterShop
   ) {
     this.createCharacter = createCharacter;
     this.characterMoving = characterMoving;
     this.characterFighting = characterFighting;
     this.characterEvent = characterEvent;
     this.characterRewards = characterRewards;
+    this.characterShop = characterShop;
   }
   moveCharacter() {
     this.characterMoving = true;
@@ -30,6 +32,14 @@ class ShowScreen {
   }
   endRewards() {
     this.characterRewards = false;
+    this.characterMoving = true;
+  }
+  showShop() {
+    this.characterShop = true;
+    this.characterMoving = false;
+  }
+  leaveShop() {
+    this.characterShop = false;
     this.characterMoving = true;
   }
 }

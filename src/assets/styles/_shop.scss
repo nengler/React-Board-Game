@@ -1,0 +1,25 @@
+.shop-container {
+  padding-top: 60px;
+}
+
+.shop-item-flex {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.shop-item-cost {
+  text-align: left;
+}
+
+.cant-afford {
+  color: red;
+}
+
+.can-afford {
+  color: green;
+}
+
+.leave-shop {
+  padding-top: 15px;
+}

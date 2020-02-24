@@ -71,4 +71,12 @@ class Player {
   }
 }
 
-export const player = new Player("", 10, 2, [strike, defend], 24, dagger, 0);
+export const player = new Player(
+  "",
+  10,
+  2,
+  [strike, defend],
+  24,
+  dagger,
+  10000
+);

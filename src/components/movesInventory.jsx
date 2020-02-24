@@ -19,6 +19,8 @@ class MovesInventory extends Component {
             {this.props.weapon.name}
             <br />
             Dmg Multiplier: {this.props.weapon.damageMultiplier}
+            <br />
+            Block Multiplier: {this.props.weapon.blockMultiplier}
           </span>
         </li>
         <li>
