@@ -42,6 +42,14 @@ class ShowScreen {
     this.characterShop = false;
     this.characterMoving = true;
   }
+  characterDeath() {
+    this.createCharacter = true;
+    this.characterMoving = false;
+    this.characterFighting = false;
+    this.characterEvent = false;
+    this.characterRewards = false;
+    this.characterShop = false;
+  }
 }
 
 export var screen = new ShowScreen(true, false, false, false, false);

@@ -4,21 +4,30 @@ class square extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: this.props.squareInfo
+      name: this.props.square
     };
   }
+  getSquareClass = () => {
+    let squareClassName = "square ";
+    if (this.state.name === "") {
+      squareClassName += "transparent-box";
+    } else {
+      squareClassName += "primary-box";
+    }
+    return squareClassName;
+  };
   render() {
     return (
       <span>
         <button
-          className="btn btn-primary square"
+          className={this.getSquareClass()}
           onClick={() => {
             this.props.handleClick(this.props.location, this.props.square);
           }}
         >
           {this.props.square}
         </button>
-        {(this.props.location + 1) % 7 === 0 && <br />}
+        {(this.props.location + 1) % 9 === 0 && <br />}
       </span>
     );
   }

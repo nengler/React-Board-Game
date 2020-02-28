@@ -69,6 +69,19 @@ class Player {
   decreaseCurrentMana(manaCost) {
     this.currentMana -= manaCost;
   }
+  handlePlayerDeath() {
+    this.playerName = "";
+    this.currentHealth = 10;
+    this.maxHealth = 10;
+    this.maxMana = 2;
+    this.currentMana = 2;
+    this.playerInventory = [];
+    this.playerMoves = [strike, defend];
+    this.playerPosition = 24;
+    this.weapon = dagger;
+    this.gold = 0;
+    this.block = 0;
+  }
 }
 
 export const player = new Player(
