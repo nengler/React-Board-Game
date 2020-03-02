@@ -2,6 +2,7 @@ export class MonsterContainerObject {
   constructor() {
     this.monsterArray = [];
     this.lastMonster = "";
+    this.bossArray = [];
   }
   addMonsters(monsters) {
     monsters.forEach(monster => {
@@ -25,5 +26,19 @@ export class MonsterContainerObject {
     }
     this.lastMonster = retMonster.name;
     return retMonster;
+  }
+  addBosses(bosses) {
+    bosses.forEach(boss => {
+      if (!(boss.level in this.bossArray)) {
+        this.bossArray[boss.level] = Array(boss);
+      } else {
+        this.bossArray[boss.level].push(boss);
+      }
+    });
+  }
+  getBoss(level) {
+    return this.bossArray[level][
+      Math.floor(Math.random() * this.bossArray[level].length)
+    ];
   }
 }

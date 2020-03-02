@@ -6,7 +6,7 @@ import Inventory from "./inventory";
 import Shop from "./shop";
 import { potions } from "../constants/itemConstants";
 import FightBoard from "./fightBoard";
-import { enemies } from "../constants/monsters";
+import { enemies, bosses } from "../constants/monsters";
 import { player } from "../constants/playerConstant";
 import { screen } from "../constants/showScreen";
 import MovesInventory from "./movesInventory";
@@ -21,6 +21,7 @@ import { MonsterContainerObject } from "../constants/monsterContainerObject";
 /*
 TODO:
 add boss
+if player has more than 4 cards in hand
 random events
 */
 
@@ -53,7 +54,7 @@ class Game extends Component {
   }
 
   getDirections() {
-    let directions = ["NE", "SE", "SW", "NW"];
+    let directions = ["NE", "NW", "SW", "SE"];
     directions = this.randomizer(directions);
     directions.splice(3, 1);
     return directions;
@@ -81,7 +82,7 @@ class Game extends Component {
     return stepDirections;
   }
 
-  createPath(gameBoard, direction, bigActivity, activitiesObject) {
+  createPath(gameBoard, direction, activitiesObject) {
     let stepDirections = this.createDirections(
       direction,
       gameBoard.width,
@@ -107,7 +108,7 @@ class Game extends Component {
       }
       gameBoard.changeBoardSquare(activitiesObject.getActivity(), position);
     });
-    gameBoard.changeBoardSquare(bigActivity, position);
+    gameBoard.changeBoardSquare(activitiesObject.getBigActivity(), position);
     return gameBoard;
   }
 
@@ -124,7 +125,8 @@ class Game extends Component {
     for (let i = startingValue; i < greaterThanValue; i += iterationValue) {
       gameBoard.changeBoardSquare(activitiesObject.getActivity(), i);
       if (bossIndex === bossPlacement) {
-        gameBoard.changeBoardSquare("💢", i);
+        gameBoard.changeBoardSquare("⚔️", i);
+        gameBoard.setBossPosition(i);
       }
       bossIndex++;
     }
@@ -183,20 +185,14 @@ class Game extends Component {
 
   createBoard(primaryDirections, secondaryDirection, gameBoard) {
     let bigActivities = ["🛏️", "🎊", "🛒"];
-    let activitiesObject = new activityObject();
+    let activitiesObject = new activityObject(bigActivities);
     activitiesObject.addToArrayXTimes(" ", 2);
     activitiesObject.addToArrayXTimes("?", 2);
-    activitiesObject.addToArrayXTimes("⚔", 4);
+    activitiesObject.addToArrayXTimes("🗡️", 4);
     activitiesObject.addToArrayXTimes("💰", 2);
-    let i = 0;
     bigActivities = this.randomizer(bigActivities);
     primaryDirections.forEach(direction => {
-      gameBoard = this.createPath(
-        gameBoard,
-        direction,
-        bigActivities[i++],
-        activitiesObject
-      );
+      gameBoard = this.createPath(gameBoard, direction, activitiesObject);
     });
     gameBoard = this.connectPrimaries(
       gameBoard,
@@ -206,7 +202,6 @@ class Game extends Component {
     gameBoard = this.createPath(
       gameBoard,
       secondaryDirection,
-      bigActivities[i++],
       activitiesObject
     );
     return gameBoard;
@@ -303,6 +298,7 @@ class Game extends Component {
     let shop = this.state.shop;
     let enemiesContainer = new MonsterContainerObject();
     enemiesContainer.addMonsters(enemies);
+    enemiesContainer.addBosses(bosses);
     const itemsArray = [...playerMoveArray, ...weaponArray];
     treasure.itemsToAddToTreasure(itemsArray);
     shop.itemsToAddToShop(itemsArray);
@@ -324,14 +320,17 @@ class Game extends Component {
     let chatMessage = this.state.chatMessage;
     chatMessage += message + "\n";
     this.setState({ chatMessage }, () => {
-      var textarea = document.getElementById("chat_id");
-      textarea.scrollTop = textarea.scrollHeight;
+      try {
+        var textarea = document.getElementById("chat_id");
+        textarea.scrollTop = textarea.scrollHeight;
+      } catch {}
     });
   };
 
   handleSquareProperty = square => {
     let player = this.state.player;
     let screen = this.state.screen;
+    let enemiesContainer = this.state.enemiesContainer;
     switch (square) {
       case "💰":
         player.increaseGold(15);
@@ -344,9 +343,8 @@ class Game extends Component {
         this.setState({ player });
         this.addToChatBox("found " + potion.name);
         break;
-      case "⚔":
+      case "🗡️":
         screen.fightScreen();
-        let enemiesContainer = this.state.enemiesContainer;
         let currentEnemy = enemiesContainer.getMonster(
           this.state.player.getCurrentLevel()
         );
@@ -367,6 +365,17 @@ class Game extends Component {
         player.fullHeal();
         this.addToChatBox("player healed to full");
         this.setState({ screen });
+        break;
+      case "⚔️":
+        screen.fightScreen();
+        let boss = enemiesContainer.getBoss(
+          this.state.player.getCurrentLevel()
+        );
+        boss.currentHealth = boss.maxHealth;
+        this.setState({ currentEnemy: boss, screen });
+        break;
+      case "🚪":
+        console.log("heyo");
         break;
       default:
         break;
@@ -392,7 +401,11 @@ class Game extends Component {
     this.handleSquareProperty(square);
     let gameBoard = this.state.gameBoard;
     let player = this.state.player;
-    gameBoard.changeBoardSquare(" ", player.playerPosition);
+    if (player.playerPosition === this.state.gameBoard.bossPosition) {
+      gameBoard.changeBoardSquare("🚪", player.playerPosition);
+    } else {
+      gameBoard.changeBoardSquare(" ", player.playerPosition);
+    }
     gameBoard.changeBoardSquare("🧑", position);
     player.movePlayer(position);
     this.setState({ gameBoard, player });
@@ -472,16 +485,16 @@ class Game extends Component {
       player.currentHealth += block;
 
       //ADD BACK INNNNNNNNNN
-      //this.addToChatBox("Player was hit for " + block * -1 + " damage");
+      this.addToChatBox("Player was hit for " + block * -1 + " damage");
     } else {
-      //this.addToChatBox("Player blocked all damage");
+      this.addToChatBox("Player blocked all damage");
     }
     let isPlayerDead = this.checkIfDead(player.currentHealth);
     if (isPlayerDead) {
-      let screen = this.state.screen;
-      screen.characterDeath();
-      player.handlePlayerDeath();
-      this.setState({ player, currentEnemy });
+      //let screen = this.state.screen;
+      //screen.characterDeath();
+      //player.handlePlayerDeath();
+      //this.setState({ screen, player, currentEnemy });
     } else {
       player.endTurn();
       currentEnemy.goToNextMove();

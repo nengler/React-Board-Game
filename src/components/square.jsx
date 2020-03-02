@@ -12,7 +12,10 @@ class square extends Component {
     if (this.state.name === "") {
       squareClassName += "transparent-box";
     } else {
-      squareClassName += "primary-box";
+      squareClassName += "primary-box ";
+      if (this.props.square === "🧑") {
+        squareClassName += "player-box";
+      }
     }
     return squareClassName;
   };
