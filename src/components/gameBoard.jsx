@@ -34,6 +34,7 @@ class GameBoard extends Component {
             key={index}
             square={square}
             location={index}
+            boardWidth={this.props.boardWidth}
             handleClick={this.props.playerMovement}
           />
         ))}

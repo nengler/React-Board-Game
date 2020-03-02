@@ -27,7 +27,7 @@ class square extends Component {
         >
           {this.props.square}
         </button>
-        {(this.props.location + 1) % 9 === 0 && <br />}
+        {(this.props.location + 1) % this.props.boardWidth === 0 && <br />}
       </span>
     );
   }

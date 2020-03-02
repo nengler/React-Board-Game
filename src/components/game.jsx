@@ -6,31 +6,31 @@ import Inventory from "./inventory";
 import Shop from "./shop";
 import { potions } from "../constants/itemConstants";
 import FightBoard from "./fightBoard";
-import { cockRoach, worm } from "../constants/monsters";
+import { enemies } from "../constants/monsters";
 import { player } from "../constants/playerConstant";
 import { screen } from "../constants/showScreen";
-import { sword } from "../constants/weapons";
 import MovesInventory from "./movesInventory";
 import { playerMoveArray } from "../constants/moves";
 import { weaponArray } from "../constants/weapons";
-import { tripleStrike, wall } from "../constants/moves";
 import { treasure } from "../constants/treasure";
 import { shop } from "../constants/shop";
+import { boardObject } from "../constants/boardObject";
+import { activityObject } from "../constants/activityObject";
+import { MonsterContainerObject } from "../constants/monsterContainerObject";
 
 /*
 TODO:
 add boss
 random events
-algorith to randomize floor
 */
 
 class Game extends Component {
   state = {
     player: player,
-    enemies: [cockRoach, worm, cockRoach],
+    enemiesContainer: null,
     currentEnemy: null,
     screen: screen,
-    gameBoard: Array(63).fill(""),
+    gameBoard: null,
     chatMessage: "",
     treasure: treasure,
     shop: shop
@@ -59,12 +59,12 @@ class Game extends Component {
     return directions;
   }
 
-  createDirections(direction) {
+  createDirections(direction, width, height) {
     let stepDirections = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < height / 2 - 1; i++) {
       stepDirections.push(direction.substr(0, 1));
     }
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < width / 2 - 1; i++) {
       stepDirections.push(direction.substr(1, 2));
     }
     stepDirections = this.randomizer(stepDirections);
@@ -81,72 +81,134 @@ class Game extends Component {
     return stepDirections;
   }
 
-  createPath(gameBoard, direction) {
-    let stepDirections = this.createDirections(direction);
-    console.log(stepDirections);
-    let position = (gameBoard.length - 1) / 2;
+  createPath(gameBoard, direction, bigActivity, activitiesObject) {
+    let stepDirections = this.createDirections(
+      direction,
+      gameBoard.width,
+      gameBoard.height
+    );
+    let position = (gameBoard.board.length - 1) / 2;
     stepDirections.forEach(step => {
       switch (step) {
         case "N":
-          position -= 9;
-          gameBoard[position] = " p";
+          position -= gameBoard.width;
           break;
         case "S":
-          position += 9;
-          gameBoard[position] = " p";
+          position += gameBoard.width;
           break;
         case "W":
           position -= 1;
-          gameBoard[position] = " p";
           break;
         case "E":
           position += 1;
-          gameBoard[position] = " p";
           break;
         default:
           break;
       }
+      gameBoard.changeBoardSquare(activitiesObject.getActivity(), position);
     });
+    gameBoard.changeBoardSquare(bigActivity, position);
     return gameBoard;
   }
 
-  connectPrimaries(gameBoard, primaryDirections) {
-    if (primaryDirections.includes("NE") && primaryDirections.includes("NW")) {
-      for (let i = 0; i < 9; i++) {
-        gameBoard[i] = " p";
+  handlePrimaryIterations(
+    gameBoard,
+    startingValue,
+    greaterThanValue,
+    iterationValue,
+    bossSpacer,
+    activitiesObject
+  ) {
+    let bossPlacement = Math.floor(Math.random() * bossSpacer) + 1;
+    let bossIndex = 0;
+    for (let i = startingValue; i < greaterThanValue; i += iterationValue) {
+      gameBoard.changeBoardSquare(activitiesObject.getActivity(), i);
+      if (bossIndex === bossPlacement) {
+        gameBoard.changeBoardSquare("💢", i);
       }
+      bossIndex++;
+    }
+    return gameBoard;
+  }
+
+  connectPrimaries(gameBoard, primaryDirections, activitiesObject) {
+    if (primaryDirections.includes("NE") && primaryDirections.includes("NW")) {
+      gameBoard = this.handlePrimaryIterations(
+        gameBoard,
+        1,
+        gameBoard.width - 1,
+        1,
+        (gameBoard.width - 1) / 2,
+        activitiesObject
+      );
     } else if (
       primaryDirections.includes("NE") &&
       primaryDirections.includes("SE")
     ) {
-      for (let i = 8; i < 63; i += 9) {
-        gameBoard[i] = " k";
-      }
+      gameBoard = this.handlePrimaryIterations(
+        gameBoard,
+        gameBoard.width * 2 - 1,
+        gameBoard.width * gameBoard.height - 1,
+        gameBoard.width,
+        (gameBoard.height - 1) / 2,
+        activitiesObject
+      );
     } else if (
       primaryDirections.includes("SW") &&
       primaryDirections.includes("SE")
     ) {
-      for (let i = 54; i < 63; i++) {
-        gameBoard[i] = " k";
-      }
+      gameBoard = this.handlePrimaryIterations(
+        gameBoard,
+        gameBoard.board.length - gameBoard.width + 1,
+        gameBoard.board.length - 1,
+        1,
+        (gameBoard.width - 1) / 2,
+        activitiesObject
+      );
     } else if (
       primaryDirections.includes("SW") &&
       primaryDirections.includes("NW")
     ) {
-      for (let i = 0; i < 55; i += 9) {
-        gameBoard[i] = " k";
-      }
+      gameBoard = this.handlePrimaryIterations(
+        gameBoard,
+        gameBoard.width,
+        gameBoard.width * (gameBoard.height - 1),
+        gameBoard.width,
+        (gameBoard.height - 1) / 2,
+        activitiesObject
+      );
     }
     return gameBoard;
   }
 
   createBoard(primaryDirections, secondaryDirection, gameBoard) {
+    let bigActivities = ["🛏️", "🎊", "🛒"];
+    let activitiesObject = new activityObject();
+    activitiesObject.addToArrayXTimes(" ", 2);
+    activitiesObject.addToArrayXTimes("?", 2);
+    activitiesObject.addToArrayXTimes("⚔", 4);
+    activitiesObject.addToArrayXTimes("💰", 2);
+    let i = 0;
+    bigActivities = this.randomizer(bigActivities);
     primaryDirections.forEach(direction => {
-      console.log("hel");
-      gameBoard = this.createPath(gameBoard, direction);
+      gameBoard = this.createPath(
+        gameBoard,
+        direction,
+        bigActivities[i++],
+        activitiesObject
+      );
     });
-    gameBoard = this.connectPrimaries(gameBoard, primaryDirections);
-    gameBoard = this.createPath(gameBoard, secondaryDirection);
+    gameBoard = this.connectPrimaries(
+      gameBoard,
+      primaryDirections,
+      activitiesObject
+    );
+    gameBoard = this.createPath(
+      gameBoard,
+      secondaryDirection,
+      bigActivities[i++],
+      activitiesObject
+    );
     return gameBoard;
   }
 
@@ -191,7 +253,6 @@ class Game extends Component {
       case "SW":
         if (boardDirections.includes("SE") && boardDirections.includes("NW")) {
           let randomNumberOneOrTwo = Math.floor(Math.random() * 2);
-          console.log(randomNumberOneOrTwo);
 
           primaryDirections.push(
             boardDirections.splice(randomNumberOneOrTwo, 1).toString()
@@ -209,7 +270,6 @@ class Game extends Component {
       case "NW":
         if (boardDirections.includes("SW") && boardDirections.includes("NE")) {
           let randomNumberOneOrTwo = Math.floor(Math.random() * 2);
-          console.log(randomNumberOneOrTwo);
           primaryDirections.push(
             boardDirections.splice(randomNumberOneOrTwo, 1).toString()
           );
@@ -223,6 +283,8 @@ class Game extends Component {
           );
         }
         break;
+      default:
+        break;
     }
     let secondaryDirection = boardDirections[0];
     gameBoard = this.createBoard(
@@ -230,6 +292,7 @@ class Game extends Component {
       secondaryDirection,
       gameBoard
     );
+    gameBoard.changeBoardSquare("🧑", player.playerPosition);
     return gameBoard;
   }
 
@@ -238,31 +301,23 @@ class Game extends Component {
     let screen = this.state.screen;
     let treasure = this.state.treasure;
     let shop = this.state.shop;
-    treasure.itemsToAddToTreasure(playerMoveArray);
-    treasure.itemsToAddToTreasure(weaponArray);
-    shop.itemsToAddToShop(playerMoveArray);
-    shop.itemsToAddToShop(weaponArray);
+    let enemiesContainer = new MonsterContainerObject();
+    enemiesContainer.addMonsters(enemies);
+    const itemsArray = [...playerMoveArray, ...weaponArray];
+    treasure.itemsToAddToTreasure(itemsArray);
+    shop.itemsToAddToShop(itemsArray);
     screen.moveCharacter();
-    let gameBoard = this.state.gameBoard;
-    player.playerPosition = (gameBoard.length - 1) / 2;
+    let gameBoard = new boardObject(5, 7);
+    player.playerPosition = (gameBoard.board.length - 1) / 2;
     gameBoard = this.createFloor(gameBoard);
-    gameBoard[player.playerPosition] = "🧑";
-    /*for (let i = 0; i < gameBoard.length; i++) {
-      if (i === player.playerPosition) {
-        gameBoard[i] = "🧑";
-      } else if (i % 10 === 0) {
-        gameBoard[i] = "?";
-      } else if (i % 12 === 0) {
-        gameBoard[i] = "⚔";
-      } else if (i % 15 === 0) {
-        gameBoard[i] = "👑";
-      } else if (i % 5 === 0) {
-        gameBoard[i] = "💰";
-      } else if (i === gameBoard.length - 2 || i === 1) {
-        gameBoard[i] = "🛍️";
-      }
-    }*/
-    this.setState({ screen, treasure, shop, player, gameBoard });
+    this.setState({
+      screen,
+      treasure,
+      shop,
+      player,
+      gameBoard,
+      enemiesContainer
+    });
   };
 
   addToChatBox = message => {
@@ -291,17 +346,26 @@ class Game extends Component {
         break;
       case "⚔":
         screen.fightScreen();
-        let enemies = this.state.enemies;
-        let currentEnemy = enemies.shift();
+        let enemiesContainer = this.state.enemiesContainer;
+        let currentEnemy = enemiesContainer.getMonster(
+          this.state.player.getCurrentLevel()
+        );
         currentEnemy.currentHealth = currentEnemy.maxHealth;
-        this.setState({ enemies, currentEnemy, screen });
+        this.setState({ currentEnemy, screen });
         break;
-      case "👑":
+      case "🎊":
         screen.showRewads();
+        this.addToChatBox("Player found lootations ");
         this.setState({ screen });
         break;
-      case "🛍️":
+      case "🛒":
         screen.showShop();
+        this.addToChatBox("Player found a shop");
+        this.setState({ screen });
+        break;
+      case "🛏️":
+        player.fullHeal();
+        this.addToChatBox("player healed to full");
         this.setState({ screen });
         break;
       default:
@@ -309,12 +373,15 @@ class Game extends Component {
     }
   };
 
-  checkIfLegalMove = (proposedPosition, playerPosition, square) => {
+  checkIfLegalMovement = (proposedPosition, playerPosition, square) => {
     if (
-      proposedPosition === playerPosition + 1 ||
-      proposedPosition === playerPosition - 1 ||
-      proposedPosition === playerPosition + 9 ||
-      (proposedPosition === playerPosition - 9 && square !== "")
+      (proposedPosition === playerPosition + 1 ||
+        proposedPosition === playerPosition - 1 ||
+        proposedPosition ===
+          playerPosition + this.state.gameBoard.board.width ||
+        proposedPosition ===
+          playerPosition - this.state.gameBoard.board.width) &&
+      square !== ""
     ) {
       return true;
     }
@@ -325,29 +392,29 @@ class Game extends Component {
     this.handleSquareProperty(square);
     let gameBoard = this.state.gameBoard;
     let player = this.state.player;
-    gameBoard[player.playerPosition] = " ";
-    gameBoard[position] = "🧑";
+    gameBoard.changeBoardSquare(" ", player.playerPosition);
+    gameBoard.changeBoardSquare("🧑", position);
     player.movePlayer(position);
     this.setState({ gameBoard, player });
   }
 
   handleMovement = (position, square) => {
-    let isLegalSquare = false;
-    isLegalSquare = this.checkIfLegalMove(
-      position,
-      this.state.player.playerPosition,
-      square
-    );
-    if (isLegalSquare) {
+    if (
+      this.checkIfLegalMovement(
+        position,
+        this.state.player.playerPosition,
+        square
+      )
+    ) {
       this.movePlayer(position, square);
     }
   };
 
   checkIfLegalSquare = position => {
     let gameBoard = this.state.gameBoard;
-    if (position < 0 || position >= gameBoard.length) {
+    if (position < 0 || position >= gameBoard.board.length) {
       return false;
-    } else if (gameBoard[position] === "") {
+    } else if (gameBoard.board[position] === "") {
       return false;
     }
     return true;
@@ -359,35 +426,23 @@ class Game extends Component {
       let square = "";
       switch (e.key) {
         case "ArrowUp":
-          position -= 9;
-          if (this.checkIfLegalSquare(position)) {
-            square = this.state.gameBoard[position];
-            this.movePlayer(position, square);
-          }
+          position -= this.state.gameBoard.width;
           break;
         case "ArrowDown":
-          position += 9;
-          if (this.checkIfLegalSquare(position)) {
-            square = this.state.gameBoard[position];
-            this.movePlayer(position, square);
-          }
+          position += this.state.gameBoard.width;
           break;
         case "ArrowLeft":
           position -= 1;
-          if (this.checkIfLegalSquare(position)) {
-            square = this.state.gameBoard[position];
-            this.movePlayer(position, square);
-          }
           break;
         case "ArrowRight":
           position += 1;
-          if (this.checkIfLegalSquare(position)) {
-            square = this.state.gameBoard[position];
-            this.movePlayer(position, square);
-          }
           break;
         default:
           break;
+      }
+      if (this.checkIfLegalSquare(position)) {
+        square = this.state.gameBoard.board[position];
+        this.movePlayer(position, square);
       }
     }
   };
@@ -415,6 +470,8 @@ class Game extends Component {
     block -= currentEnemyDamage * enemyMove.damage * enemyMove.amountOfHits;
     if (block < 0) {
       player.currentHealth += block;
+
+      //ADD BACK INNNNNNNNNN
       //this.addToChatBox("Player was hit for " + block * -1 + " damage");
     } else {
       //this.addToChatBox("Player blocked all damage");
@@ -533,6 +590,8 @@ class Game extends Component {
         case "Weapon":
           player.changeWeapon(shopItem);
           break;
+        default:
+          break;
       }
       shop.shopItems.splice(index, 1);
       shop.decreaseItemsToShow();
@@ -625,7 +684,8 @@ class Game extends Component {
                   <div className="col-8 main-component">
                     {this.state.screen.characterMoving && (
                       <GameBoard
-                        gameBoard={this.state.gameBoard}
+                        gameBoard={this.state.gameBoard.board}
+                        boardWidth={this.state.gameBoard.width}
                         playerMovement={this.handleMovement}
                       />
                     )}

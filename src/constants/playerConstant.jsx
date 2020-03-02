@@ -9,7 +9,8 @@ class Player {
     playerMoves,
     playerPosition,
     weapon,
-    gold
+    gold,
+    level
   ) {
     this.playerName = playerName;
     this.currentHealth = maxHealth;
@@ -22,6 +23,7 @@ class Player {
     this.weapon = weapon;
     this.gold = gold;
     this.block = 0;
+    this.level = level;
   }
   setPlayerName(newName) {
     this.playerName = newName;
@@ -82,6 +84,12 @@ class Player {
     this.gold = 0;
     this.block = 0;
   }
+  fullHeal() {
+    this.currentHealth = this.maxHealth;
+  }
+  getCurrentLevel() {
+    return this.level;
+  }
 }
 
 export const player = new Player(
@@ -91,5 +99,6 @@ export const player = new Player(
   [strike, defend],
   24,
   dagger,
-  10000
+  10000,
+  1
 );
