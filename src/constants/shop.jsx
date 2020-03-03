@@ -3,6 +3,7 @@ class Shop {
     this.shopItems = shopItems;
     this.itemIndex = itemIndex;
     this.itemsToShow = itemsToShow;
+    this.isStillInShop = false;
   }
   itemsToAddToShop(items) {
     items.forEach(item => {
@@ -46,6 +47,9 @@ class Shop {
   }
   resetItemsToShow() {
     this.itemsToShow = 4;
+  }
+  stillInShop() {
+    this.isStillInShop = true;
   }
 }
 

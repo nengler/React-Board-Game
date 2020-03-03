@@ -13,10 +13,16 @@ class ShowScreen {
     this.characterEvent = characterEvent;
     this.characterRewards = characterRewards;
     this.characterShop = characterShop;
+    this.characterDiscardCard = false;
+  }
+  makeAllValuesFalse() {
+    Object.keys(this).forEach(key => {
+      this[key] = false;
+    });
   }
   moveCharacter() {
+    this.makeAllValuesFalse();
     this.characterMoving = true;
-    this.createCharacter = false;
   }
   fightScreen() {
     this.characterMoving = false;
@@ -35,20 +41,20 @@ class ShowScreen {
     this.characterMoving = true;
   }
   showShop() {
+    this.makeAllValuesFalse();
     this.characterShop = true;
-    this.characterMoving = false;
   }
   leaveShop() {
     this.characterShop = false;
     this.characterMoving = true;
   }
+  discardCard() {
+    this.makeAllValuesFalse();
+    this.characterDiscardCard = true;
+  }
   characterDeath() {
+    this.makeAllValuesFalse();
     this.createCharacter = true;
-    this.characterMoving = false;
-    this.characterFighting = false;
-    this.characterEvent = false;
-    this.characterRewards = false;
-    this.characterShop = false;
   }
 }
 

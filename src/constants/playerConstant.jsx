@@ -90,6 +90,13 @@ class Player {
   getCurrentLevel() {
     return this.level;
   }
+  discardCard(moveToDiscard) {
+    for (let i = 0; i < this.playerMoves.length; i++) {
+      if (this.playerMoves[i].name === moveToDiscard) {
+        this.playerMoves.splice(i, 1);
+      }
+    }
+  }
 }
 
 export const player = new Player(

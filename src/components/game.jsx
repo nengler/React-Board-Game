@@ -4,6 +4,7 @@ import Player from "./player";
 import TreasureChest from "./treasureChest";
 import Inventory from "./inventory";
 import Shop from "./shop";
+import DiscardCard from "./discardCard";
 import { potions } from "../constants/itemConstants";
 import FightBoard from "./fightBoard";
 import { enemies, bosses } from "../constants/monsters";
@@ -20,7 +21,8 @@ import { MonsterContainerObject } from "../constants/monsterContainerObject";
 
 /*
 TODO:
-add boss
+add boss reword
+add monster reword
 if player has more than 4 cards in hand
 random events
 */
@@ -491,10 +493,10 @@ class Game extends Component {
     }
     let isPlayerDead = this.checkIfDead(player.currentHealth);
     if (isPlayerDead) {
-      //let screen = this.state.screen;
-      //screen.characterDeath();
-      //player.handlePlayerDeath();
-      //this.setState({ screen, player, currentEnemy });
+      let screen = this.state.screen;
+      screen.characterDeath();
+      player.handlePlayerDeath();
+      this.setState({ screen, player, currentEnemy });
     } else {
       player.endTurn();
       currentEnemy.goToNextMove();
@@ -572,6 +574,26 @@ class Game extends Component {
     }
   };
 
+  handleDiscard = moveToDiscard => {
+    let player = this.state.player;
+    let screen = this.state.screen;
+    player.discardCard(moveToDiscard);
+    if (this.state.shop.isStillInShop) {
+      screen.showShop();
+    } else {
+      screen.moveCharacter();
+    }
+    this.setState({ player, screen });
+  };
+
+  handlePlayerInventory() {
+    let shop = this.state.shop;
+    let screen = this.state.screen;
+    screen.discardCard();
+    shop.stillInShop();
+    this.setState({ shop, screen });
+  }
+
   handleTreasureClick = treasureItem => {
     let player = this.state.player;
     let screen = this.state.screen;
@@ -581,6 +603,9 @@ class Game extends Component {
       treasureItem.constructor.name === "Block"
     ) {
       player.addMove(treasureItem);
+      if (player.playerMoves.length > 4) {
+        this.handlePlayerInventory();
+      }
     } else if (treasureItem.constructor.name === "Weapon") {
       player.changeWeapon(treasureItem);
     }
@@ -596,9 +621,17 @@ class Game extends Component {
       switch (shopItem.constructor.name) {
         case "Attack":
           player.addMove(shopItem);
+          if (player.playerMoves.length > 4) {
+            shop.stillInShop();
+            this.handlePlayerInventory();
+          }
           break;
         case "Block":
           player.addMove(shopItem);
+          if (player.playerMoves.length > 4) {
+            shop.stillInShop();
+            this.handlePlayerInventory();
+          }
           break;
         case "Weapon":
           player.changeWeapon(shopItem);
@@ -608,7 +641,6 @@ class Game extends Component {
       }
       shop.shopItems.splice(index, 1);
       shop.decreaseItemsToShow();
-      console.log(shop);
       this.setState({ player, shop });
     } else {
       this.addToChatBox("Cant afford " + shopItem.name);
@@ -634,7 +666,7 @@ class Game extends Component {
   render() {
     const disabledOption = this.state.playerName === "";
     return (
-      <div className="container-fluid" ref="nv">
+      <div className="container-fluid">
         {this.state.screen.createCharacter ? (
           <div className="playerInfo ">
             <input
@@ -669,20 +701,30 @@ class Game extends Component {
                 />
               </div>
             </div>
-            {this.state.screen.characterFighting ? (
+            {this.state.screen.characterFighting ||
+            this.state.screen.characterDiscardCard ? (
               <div className="row">
                 <div className="col-12 fightBoard-div">
-                  <FightBoard
-                    enemy={this.state.currentEnemy}
-                    onAttackCardClick={this.handleAttackCardClick}
-                    onBlockCardClick={this.handleBlockCardClick}
-                    onEnemyAttack={this.handleEnemyAttack}
-                    playerMoves={this.state.player.playerMoves}
-                    playerWeapon={this.state.player.weapon}
-                    currentMana={this.state.player.currentMana}
-                    maxMana={this.state.player.maxMana}
-                    block={this.state.player.block}
-                  />
+                  {this.state.screen.characterFighting && (
+                    <FightBoard
+                      enemy={this.state.currentEnemy}
+                      onAttackCardClick={this.handleAttackCardClick}
+                      onBlockCardClick={this.handleBlockCardClick}
+                      onEnemyAttack={this.handleEnemyAttack}
+                      playerMoves={this.state.player.playerMoves}
+                      playerWeapon={this.state.player.weapon}
+                      currentMana={this.state.player.currentMana}
+                      maxMana={this.state.player.maxMana}
+                      block={this.state.player.block}
+                    />
+                  )}
+                  {this.state.screen.characterDiscardCard && (
+                    <DiscardCard
+                      weapon={this.state.player.weapon}
+                      moves={this.state.player.playerMoves}
+                      onDiscard={this.handleDiscard}
+                    />
+                  )}
                 </div>
               </div>
             ) : (
