@@ -4,6 +4,8 @@ class Treasure {
     this.commonIndex = commonIndex;
     this.rareTreasure = rareTreasure;
     this.rareIndex = rareIndex;
+    this.getTypeOfTreasure = "Common";
+    this.amountToShow = 3;
   }
   itemsToAddToTreasure(items) {
     items.forEach(item => {
@@ -33,24 +35,47 @@ class Treasure {
   }
   getTreasure() {
     var retTreasure = [];
-    let index = this.commonIndex;
-    for (let i = 0; i <= 2; i++) {
-      if (this.commonTreasure[index] !== undefined) {
-        retTreasure.push(this.commonTreasure[index]);
+    let index = 0;
+    let treasureBySpecifiedType = [];
+    if (this.getTypeOfTreasure === "Common") {
+      index = this.commonIndex;
+      treasureBySpecifiedType = this.commonTreasure;
+    } else if (this.getTypeOfTreasure === "Rare") {
+      index = this.rareIndex;
+      treasureBySpecifiedType = this.rareTreasure;
+    }
+    for (let i = 0; i <= this.amountToShow - 1; i++) {
+      if (treasureBySpecifiedType[index] !== undefined) {
+        retTreasure.push(treasureBySpecifiedType[index]);
       } else {
         index = 0;
-        retTreasure.push(this.commonTreasure[index]);
+        retTreasure.push(treasureBySpecifiedType[index]);
       }
       index++;
     }
-    console.log(retTreasure);
     return retTreasure;
   }
   increaseIndex() {
-    this.commonIndex += 3;
-    if (this.commonIndex > this.commonTreasure.length - 1) {
-      this.commonIndex = 0;
+    if (this.getTypeOfTreasure === "Rare") {
+      this.rareIndex += this.amountToShow;
+      if (this.rareIndex > this.rareTreasure.length - 1) {
+        this.rareIndex = 0;
+      }
+    } else if (this.getTypeOfTreasure === "Common") {
+      this.commonIndex += this.amountToShow;
+      if (this.commonIndex > this.commonTreasure.length - 1) {
+        this.commonIndex = 0;
+      }
     }
+  }
+  showCommon() {
+    this.getTypeOfTreasure = "Common";
+  }
+  showRare() {
+    this.getTypeOfTreasure = "Rare";
+  }
+  amountToBeShown(amount) {
+    this.amountToShow = amount;
   }
 }
 

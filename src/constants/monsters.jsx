@@ -8,7 +8,7 @@ import {
 import { claws } from "../constants/weapons";
 
 class Monster {
-  constructor(name, maxHealth, weapon, monsterMoves, level) {
+  constructor(name, maxHealth, weapon, monsterMoves, level, isABoss) {
     this.name = name;
     this.maxHealth = maxHealth;
     this.currentHealth = maxHealth;
@@ -16,6 +16,7 @@ class Monster {
     this.monsterMoves = monsterMoves;
     this.monsterMoveIndex = 0;
     this.level = level;
+    this.isABoss = isABoss;
   }
   getCurrentMove() {
     return this.monsterMoves[this.monsterMoveIndex];
@@ -28,16 +29,24 @@ class Monster {
   }
 }
 
-const cockRoach = new Monster("CockRoach", 10, claws, [nullBoy, strike], 1);
-const worm = new Monster("Worm", 6, claws, [slither], 1);
+const cockRoach = new Monster(
+  "CockRoach",
+  10,
+  claws,
+  [nullBoy, strike],
+  1,
+  false
+);
+const worm = new Monster("Worm", 6, claws, [slither], 1, false);
 
 export const enemies = [cockRoach, worm];
 
 const redDevil = new Monster(
   "Red Devil",
-  50,
+  1,
   claws,
   [quickBlock, sideLunge],
-  1
+  1,
+  true
 );
 export const bosses = [redDevil];

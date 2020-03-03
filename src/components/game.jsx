@@ -21,9 +21,8 @@ import { MonsterContainerObject } from "../constants/monsterContainerObject";
 
 /*
 TODO:
-add boss reword
-add monster reword
-if player has more than 4 cards in hand
+add boss reward
+add monster reward
 random events
 */
 
@@ -355,8 +354,11 @@ class Game extends Component {
         break;
       case "🎊":
         screen.showRewads();
+        let treasure = this.state.treasure;
+        treasure.showCommon();
+        treasure.amountToBeShown(3);
         this.addToChatBox("Player found lootations ");
-        this.setState({ screen });
+        this.setState({ screen, treasure });
         break;
       case "🛒":
         screen.showShop();
@@ -527,12 +529,22 @@ class Game extends Component {
   };
 
   handleEnemyDeath(currentEnemy) {
-    currentEnemy = "";
     let screen = this.state.screen;
-    screen.endFightScreen();
+    let treasure = this.state.treasure;
+    if (currentEnemy.isABoss) {
+      screen.showRewads();
+      treasure.showRare();
+      treasure.amountToBeShown(3);
+    } else {
+      screen.showRewads();
+      treasure.showCommon();
+      treasure.amountToBeShown(2);
+    }
+    currentEnemy = "";
     this.setState({
       screen,
-      currentEnemy
+      currentEnemy,
+      treasure
     });
   }
 

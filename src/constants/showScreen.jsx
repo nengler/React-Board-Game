@@ -33,8 +33,8 @@ class ShowScreen {
     this.characterMoving = true;
   }
   showRewads() {
+    this.makeAllValuesFalse();
     this.characterRewards = true;
-    this.characterMoving = false;
   }
   endRewards() {
     this.characterRewards = false;
