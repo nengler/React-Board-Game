@@ -6,7 +6,7 @@ class discardCard extends Component {
   };
 
   getCardOutlineClass = moveName => {
-    let cardOutlineClassname = "inside-card ";
+    let cardOutlineClassname = "inside-card discard-card ";
     if (moveName === this.state.moveSelected) {
       cardOutlineClassname += "card-selected-outline";
     }
@@ -28,6 +28,7 @@ class discardCard extends Component {
   };
 
   render() {
+    const disabled = this.state.moveSelected === "";
     return (
       <div>
         <div className=" flex-parent">
@@ -55,47 +56,53 @@ class discardCard extends Component {
             <h2 className="info-title">Moves</h2>
             <div className="discard-one-move">
               {this.props.moves.map((move, index) => (
-                <div
-                  className={this.getCardOutlineClass(move.name)}
-                  onClick={() => this.selectCard(move.name)}
-                  key={index}
-                >
-                  <ul>
-                    <li
-                      className={this.getCardClass(
-                        move.constructor.name,
-                        move.name
-                      )}
-                    >
-                      {move.name}
-                    </li>
-                    <span>
-                      <li>
-                        <span>Mana Cost: {move.manaCost}</span>
-                      </li>
-                      <li>
-                        {move.constructor.name === "Attack" && (
-                          <span>
-                            Damage: {move.damage} X {move.amountOfHits}
-                          </span>
+                <div key={index}>
+                  {index === 3 && <div className="break"></div>}
+                  <div
+                    className={this.getCardOutlineClass(move.name)}
+                    onClick={() => this.selectCard(move.name)}
+                  >
+                    <ul>
+                      <li
+                        className={this.getCardClass(
+                          move.constructor.name,
+                          move.name
                         )}
-                        {move.constructor.name === "Block" && (
-                          <span>Block: {move.blockAmount}</span>
-                        )}
+                      >
+                        {move.name}
                       </li>
-                      <li>
-                        <span>Synergy: {move.synergyItem}</span>
-                      </li>
-                    </span>
-                  </ul>
+                      <span>
+                        <li>
+                          <span>Mana Cost: {move.manaCost}</span>
+                        </li>
+                        <li>
+                          {move.constructor.name === "Attack" && (
+                            <span>
+                              Damage: {move.damage} X {move.amountOfHits}
+                            </span>
+                          )}
+                          {move.constructor.name === "Block" && (
+                            <span>Block: {move.blockAmount}</span>
+                          )}
+                        </li>
+                        <li>
+                          <span>Synergy: {move.synergyItem}</span>
+                        </li>
+                      </span>
+                    </ul>
+                  </div>
                 </div>
               ))}
             </div>
+            <button
+              onClick={() => this.props.onDiscard(this.state.moveSelected)}
+              disabled={disabled}
+              className="text-center btn btn-primary ml-2 mt-2"
+            >
+              Click me
+            </button>
           </div>
         </div>
-        <button onClick={() => this.props.onDiscard(this.state.moveSelected)}>
-          Click me
-        </button>
       </div>
     );
   }

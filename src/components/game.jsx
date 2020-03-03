@@ -385,17 +385,17 @@ class Game extends Component {
   };
 
   checkIfLegalMovement = (proposedPosition, playerPosition, square) => {
+    console.log("init");
     if (
       (proposedPosition === playerPosition + 1 ||
         proposedPosition === playerPosition - 1 ||
-        proposedPosition ===
-          playerPosition + this.state.gameBoard.board.width ||
-        proposedPosition ===
-          playerPosition - this.state.gameBoard.board.width) &&
+        proposedPosition === playerPosition + this.state.gameBoard.width ||
+        proposedPosition === playerPosition - this.state.gameBoard.width) &&
       square !== ""
     ) {
       return true;
     }
+    console.log("false");
     return false;
   };
 
