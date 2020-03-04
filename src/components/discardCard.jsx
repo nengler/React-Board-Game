@@ -2,12 +2,12 @@ import React, { Component } from "react";
 
 class discardCard extends Component {
   state = {
-    moveSelected: ""
+    moveSelectedByIndex: ""
   };
 
-  getCardOutlineClass = moveName => {
+  getCardOutlineClass = moveIndex => {
     let cardOutlineClassname = "inside-card discard-card ";
-    if (moveName === this.state.moveSelected) {
+    if (moveIndex === this.state.moveSelectedByIndex) {
       cardOutlineClassname += "card-selected-outline";
     }
     return cardOutlineClassname;
@@ -23,8 +23,8 @@ class discardCard extends Component {
     return cardClassName;
   };
 
-  selectCard = moveSelected => {
-    this.setState({ moveSelected });
+  selectCard = moveSelectedByIndex => {
+    this.setState({ moveSelectedByIndex });
   };
 
   render() {
@@ -59,16 +59,11 @@ class discardCard extends Component {
                 <div key={index}>
                   {index === 3 && <div className="break"></div>}
                   <div
-                    className={this.getCardOutlineClass(move.name)}
-                    onClick={() => this.selectCard(move.name)}
+                    className={this.getCardOutlineClass(index)}
+                    onClick={() => this.selectCard(index)}
                   >
                     <ul>
-                      <li
-                        className={this.getCardClass(
-                          move.constructor.name,
-                          move.name
-                        )}
-                      >
+                      <li className={this.getCardClass(move.constructor.name)}>
                         {move.name}
                       </li>
                       <span>
@@ -95,7 +90,9 @@ class discardCard extends Component {
               ))}
             </div>
             <button
-              onClick={() => this.props.onDiscard(this.state.moveSelected)}
+              onClick={() =>
+                this.props.onDiscard(this.state.moveSelectedByIndex)
+              }
               disabled={disabled}
               className="text-center btn btn-primary ml-2 mt-2"
             >

@@ -5,6 +5,7 @@ import TreasureChest from "./treasureChest";
 import Inventory from "./inventory";
 import Shop from "./shop";
 import DiscardCard from "./discardCard";
+import RestChoice from "./restChoice";
 import { potions } from "../constants/itemConstants";
 import FightBoard from "./fightBoard";
 import { enemies, bosses } from "../constants/monsters";
@@ -21,8 +22,13 @@ import { MonsterContainerObject } from "../constants/monsterContainerObject";
 
 /*
 TODO:
-add boss reward
-add monster reward
+show what actual damage and block is
+add synergies
+add weapon to fight screen
+make room not completely random with amount of enemies and not enemies
+add drops from enemies, so sometimes its not a treasure chest, sometimes its a health potion or money
+weapon potion that will be able to increase damange multiplier or increase block multiplier
+or major event, not potion
 random events
 */
 
@@ -366,8 +372,8 @@ class Game extends Component {
         this.setState({ screen });
         break;
       case "🛏️":
-        player.fullHeal();
-        this.addToChatBox("player healed to full");
+        screen.characterRestChoice();
+        //this.addToChatBox("player healed to full");
         this.setState({ screen });
         break;
       case "⚔️":
@@ -599,11 +605,9 @@ class Game extends Component {
   };
 
   handlePlayerInventory() {
-    let shop = this.state.shop;
     let screen = this.state.screen;
     screen.discardCard();
-    shop.stillInShop();
-    this.setState({ shop, screen });
+    this.setState({ screen });
   }
 
   handleTreasureClick = treasureItem => {
@@ -624,6 +628,14 @@ class Game extends Component {
     screen.endRewards();
     treasure.increaseIndex();
     this.setState({ player, screen, treasure });
+  };
+
+  handleNoTreasureClick = () => {
+    let screen = this.state.screen;
+    let treasure = this.state.treasure;
+    screen.endRewards();
+    treasure.increaseIndex();
+    this.setState({ screen, treasure });
   };
 
   handleShopClick = (shopItem, index) => {
@@ -665,6 +677,22 @@ class Game extends Component {
     shop.resetItemsToShow();
     screen.leaveShop();
     this.setState({ screen });
+  };
+
+  handleRestClick = player => {
+    player.fullHeal();
+    let screen = this.state.screen;
+    screen.moveCharacter();
+    this.addToChatBox("Player healed for full");
+    this.setState({ screen, player });
+  };
+
+  handleSmithClick = (player, category, weaponName) => {
+    player.improveWeapon(category);
+    let screen = this.state.screen;
+    screen.moveCharacter();
+    this.addToChatBox("Player Improved " + weaponName);
+    this.setState({ screen, player });
   };
 
   componentDidMount() {
@@ -760,6 +788,7 @@ class Game extends Component {
                       <TreasureChest
                         treasure={this.state.treasure}
                         onTreasureClick={this.handleTreasureClick}
+                        onNoTreasure={this.handleNoTreasureClick}
                       />
                     )}
                     {this.state.screen.characterShop && (
@@ -768,6 +797,14 @@ class Game extends Component {
                         playersMoney={this.state.player.gold}
                         onShopClick={this.handleShopClick}
                         exitShop={this.handleExitShopClick}
+                      />
+                    )}
+                    {this.state.screen.characterRest && (
+                      <RestChoice
+                        player={this.state.player}
+                        weapon={this.state.player.weapon}
+                        onRestClick={this.handleRestClick}
+                        onSmithClick={this.handleSmithClick}
                       />
                     )}
                   </div>

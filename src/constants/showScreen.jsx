@@ -14,6 +14,7 @@ class ShowScreen {
     this.characterRewards = characterRewards;
     this.characterShop = characterShop;
     this.characterDiscardCard = false;
+    this.characterRest = false;
   }
   makeAllValuesFalse() {
     Object.keys(this).forEach(key => {
@@ -51,6 +52,10 @@ class ShowScreen {
   discardCard() {
     this.makeAllValuesFalse();
     this.characterDiscardCard = true;
+  }
+  characterRestChoice() {
+    this.makeAllValuesFalse();
+    this.characterRest = true;
   }
   characterDeath() {
     this.makeAllValuesFalse();

@@ -46,7 +46,7 @@ const redDevil = new Monster(
   1,
   claws,
   [quickBlock, sideLunge],
-  1,
+  50,
   true
 );
 export const bosses = [redDevil];

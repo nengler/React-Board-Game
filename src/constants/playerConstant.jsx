@@ -91,21 +91,20 @@ class Player {
     return this.level;
   }
   discardCard(moveToDiscard) {
-    for (let i = 0; i < this.playerMoves.length; i++) {
-      if (this.playerMoves[i].name === moveToDiscard) {
-        this.playerMoves.splice(i, 1);
-      }
+    this.playerMoves.splice(moveToDiscard, 1);
+  }
+  improveWeapon(category) {
+    if (category === "Attack") {
+      this.weapon.blockMultiplier -= 0.15;
+      this.weapon.damageMultiplier += 0.2;
+    } else if (category === "Block") {
+      this.weapon.damageMultiplier -= 0.15;
+      this.weapon.blockMultiplier += 0.2;
     }
+
+    this.weapon.blockMultiplier = this.weapon.blockMultiplier.toFixed(2);
+    this.weapon.damageMultiplier = this.weapon.damageMultiplier.toFixed(2);
   }
 }
 
-export const player = new Player(
-  "",
-  10,
-  2,
-  [strike, defend],
-  24,
-  dagger,
-  10000,
-  1
-);
+export const player = new Player("", 10, 2, [strike, defend], 24, dagger, 0, 1);

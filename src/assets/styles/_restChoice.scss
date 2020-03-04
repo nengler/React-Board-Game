@@ -1,0 +1,46 @@
+.increase-attack {
+  background-color: $attack-bg;
+  color: $move-text-color;
+  padding: 0.5rem 0;
+  ul {
+    margin-bottom: 0;
+  }
+  li {
+    padding: 0.15rem 0;
+  }
+}
+.increase-attack:hover {
+  outline: 2px solid black;
+}
+
+.increase-block {
+  background-color: $block-bg;
+  color: $move-text-color;
+  padding: 0.5rem 0;
+  ul {
+    margin-bottom: 0;
+  }
+  li {
+    padding: 0.15rem 0;
+  }
+}
+
+.increase-block:hover {
+  outline: 2px solid black;
+}
+
+.rest-choice-heal {
+  background-color: $low-health;
+  color: $move-text-color;
+}
+
+.rest-choice-heal:hover {
+  background-color: $high-health;
+  outline: 2px solid black;
+}
+
+.player-health-padding {
+  padding: 0.5rem 0;
+  font-size: 1.05rem;
+  margin-bottom: 0;
+}
