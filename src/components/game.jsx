@@ -22,14 +22,10 @@ import { MonsterContainerObject } from "../constants/monsterContainerObject";
 
 /*
 TODO:
-show what actual damage and block is
 add synergies
-add weapon to fight screen
 make room not completely random with amount of enemies and not enemies
-add drops from enemies, so sometimes its not a treasure chest, sometimes its a health potion or money
-weapon potion that will be able to increase damange multiplier or increase block multiplier
-or major event, not potion
 random events
+floors
 */
 
 class Game extends Component {
@@ -373,7 +369,6 @@ class Game extends Component {
         break;
       case "🛏️":
         screen.characterRestChoice();
-        //this.addToChatBox("player healed to full");
         this.setState({ screen });
         break;
       case "⚔️":
@@ -487,15 +482,22 @@ class Game extends Component {
     return true;
   }
 
-  handleEnemyAttack = (enemyMove, block, currentEnemyDamage) => {
+  handleEnemyAttack(enemyMove, playersBlock, enemyWeapon) {
     let player = this.state.player;
     let currentEnemy = this.state.currentEnemy;
-    block -= currentEnemyDamage * enemyMove.damage * enemyMove.amountOfHits;
-    if (block < 0) {
-      player.currentHealth += block;
-
-      //ADD BACK INNNNNNNNNN
-      this.addToChatBox("Player was hit for " + block * -1 + " damage");
+    currentEnemy.resetBlock();
+    let damage = this.calculateDamage(enemyMove, enemyWeapon);
+    playersBlock -= damage;
+    if (playersBlock < 0) {
+      player.currentHealth += playersBlock;
+      this.addToChatBox(
+        "Player was hit for " +
+          playersBlock * -1 +
+          " damage by " +
+          this.state.currentEnemy.name +
+          "'s " +
+          enemyMove.name
+      );
     } else {
       this.addToChatBox("Player blocked all damage");
     }
@@ -509,6 +511,30 @@ class Game extends Component {
       player.endTurn();
       currentEnemy.goToNextMove();
       this.setState({ player, currentEnemy });
+    }
+  }
+
+  handleEnemyBlock(enemyMove, enemyWeapon) {
+    let currentEnemy = this.state.currentEnemy;
+    let enemyBlock = this.calculateBlock(enemyMove, enemyWeapon);
+    currentEnemy.resetBlock();
+    currentEnemy.increaseBlock(enemyBlock);
+    player.endTurn();
+    currentEnemy.goToNextMove();
+    this.addToChatBox("Monster Increased block by " + enemyBlock);
+    this.setState({ player, currentEnemy });
+  }
+
+  handleEnemyCard = (enemyMove, playersBlock, enemyWeapon) => {
+    switch (enemyMove.constructor.name) {
+      case "Attack":
+        this.handleEnemyAttack(enemyMove, playersBlock, enemyWeapon);
+        break;
+      case "Block":
+        this.handleEnemyBlock(enemyMove, enemyWeapon);
+        break;
+      default:
+        break;
     }
   };
 
@@ -554,12 +580,9 @@ class Game extends Component {
     });
   }
 
-  calculateDamage(playerMove, playerWeapon) {
-    let damage =
-      playerMove.damage *
-      playerMove.amountOfHits *
-      playerWeapon.damageMultiplier;
-    if (playerWeapon.name === playerMove.synergyItem) {
+  calculateDamage(move, weapon) {
+    let damage = move.damage * move.amountOfHits * weapon.damageMultiplier;
+    if (weapon.name === move.synergyItem) {
       damage = damage * 1.5;
     }
     return Math.floor(damage);
@@ -576,8 +599,17 @@ class Game extends Component {
       let message = "";
       player.decreaseCurrentMana(playerMove.manaCost);
       let damage = this.calculateDamage(playerMove, playerWeapon);
-      message += "player hit " + currentEnemy.name + " for " + damage;
-      currentEnemy.currentHealth -= damage;
+      let enemyBlock = currentEnemy.block;
+      enemyBlock -= damage;
+      if (enemyBlock < 0) {
+        currentEnemy.currentHealth += enemyBlock;
+        message +=
+          "player hit " + currentEnemy.name + " for " + enemyBlock * -1;
+        currentEnemy.resetBlock();
+      } else {
+        message += "Enemy blocked attack";
+        currentEnemy.setBlock(enemyBlock);
+      }
       let isEnemyDead = this.checkIfDead(currentEnemy.currentHealth);
       if (isEnemyDead) {
         this.handleEnemyDeath(currentEnemy);
@@ -750,7 +782,7 @@ class Game extends Component {
                       enemy={this.state.currentEnemy}
                       onAttackCardClick={this.handleAttackCardClick}
                       onBlockCardClick={this.handleBlockCardClick}
-                      onEnemyAttack={this.handleEnemyAttack}
+                      onEnemyAttack={this.handleEnemyCard}
                       playerMoves={this.state.player.playerMoves}
                       playerWeapon={this.state.player.weapon}
                       currentMana={this.state.player.currentMana}

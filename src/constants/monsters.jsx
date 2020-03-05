@@ -17,6 +17,7 @@ class Monster {
     this.monsterMoveIndex = 0;
     this.level = level;
     this.isABoss = isABoss;
+    this.block = 0;
   }
   getCurrentMove() {
     return this.monsterMoves[this.monsterMoveIndex];
@@ -26,6 +27,15 @@ class Monster {
     if (this.monsterMoves[this.monsterMoveIndex] == null) {
       this.monsterMoveIndex = 0;
     }
+  }
+  increaseBlock(blockAmount) {
+    this.block += blockAmount;
+  }
+  resetBlock() {
+    this.block = 0;
+  }
+  setBlock(newBlock) {
+    this.block = newBlock;
   }
 }
 
@@ -43,10 +53,10 @@ export const enemies = [cockRoach, worm];
 
 const redDevil = new Monster(
   "Red Devil",
-  1,
+  50,
   claws,
   [quickBlock, sideLunge],
-  50,
+  1,
   true
 );
 export const bosses = [redDevil];
