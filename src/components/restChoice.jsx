@@ -70,8 +70,8 @@ class restChoice extends Component {
               }
             >
               <ul>
-                <li>Increase attack by .2</li>
-                <li>Decrease block by .15</li>
+                <li>Increase attack by .15</li>
+                <li>Decrease block by .05</li>
               </ul>
             </div>
             <div className="col-2"></div>
@@ -86,8 +86,8 @@ class restChoice extends Component {
               }
             >
               <ul>
-                <li>Increase block by .2</li>
-                <li>Decrease attack by .15</li>
+                <li>Increase block by .15</li>
+                <li>Decrease attack by .05</li>
               </ul>
             </div>
           </div>

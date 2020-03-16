@@ -4,6 +4,7 @@ class TreasureChest extends Component {
   state = {};
   render() {
     const showcaseTreasure = this.props.treasure.getTreasure();
+    console.log(showcaseTreasure);
     return (
       <div>
         <h2>Claim a Reward</h2>

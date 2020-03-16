@@ -1,14 +1,23 @@
 import {
   nullBoy,
   strike,
+  defend,
   slither,
   quickBlock,
   sideLunge
 } from "../constants/moves";
 import { claws } from "../constants/weapons";
 
-class Monster {
-  constructor(name, maxHealth, weapon, monsterMoves, level, isABoss) {
+export class Monster {
+  constructor(
+    name,
+    maxHealth,
+    weapon,
+    monsterMoves,
+    level,
+    isABoss,
+    moneyDropRange
+  ) {
     this.name = name;
     this.maxHealth = maxHealth;
     this.currentHealth = maxHealth;
@@ -18,6 +27,7 @@ class Monster {
     this.level = level;
     this.isABoss = isABoss;
     this.block = 0;
+    this.moneyDropRange = moneyDropRange;
   }
   getCurrentMove() {
     return this.monsterMoves[this.monsterMoveIndex];
@@ -37,19 +47,31 @@ class Monster {
   setBlock(newBlock) {
     this.block = newBlock;
   }
+  getMoneyDropped() {
+    return Math.floor(
+      Math.random() * (this.moneyDropRange[1] - this.moneyDropRange[0] + 1) +
+        this.moneyDropRange[0]
+    );
+  }
 }
+
+//MONSTERS
 
 const cockRoach = new Monster(
   "CockRoach",
-  10,
+  25,
   claws,
-  [nullBoy, strike],
+
+  [strike, nullBoy, defend],
   1,
-  false
+  false,
+  [10, 30]
 );
-const worm = new Monster("Worm", 6, claws, [slither], 1, false);
+const worm = new Monster("Worm", 17, claws, [slither], 1, false, [1, 25]);
 
 export const enemies = [cockRoach, worm];
+
+//BOSSES
 
 const redDevil = new Monster(
   "Red Devil",
@@ -57,6 +79,7 @@ const redDevil = new Monster(
   claws,
   [quickBlock, sideLunge],
   1,
-  true
+  true,
+  [50, 100]
 );
 export const bosses = [redDevil];

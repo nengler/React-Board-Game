@@ -64,9 +64,9 @@ class fightBoard extends Component {
       <div className="text-center">
         <div className="enemy-info container">
           <ul>
-            <li className="text-left">
+            <li className="text-center">
               <span className="enemy-name">{this.props.enemy.name}</span>
-              <div className="flex-test">
+              <div className="flex-test justify-center">
                 <div className="health-outline text-center">
                   <div className="health-bar" style={healthBarWidth}></div>
 

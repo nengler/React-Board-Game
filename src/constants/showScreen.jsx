@@ -15,6 +15,7 @@ class ShowScreen {
     this.characterShop = characterShop;
     this.characterDiscardCard = false;
     this.characterRest = false;
+    this.randomEvent = false;
   }
   makeAllValuesFalse() {
     Object.keys(this).forEach(key => {
@@ -60,6 +61,10 @@ class ShowScreen {
   characterDeath() {
     this.makeAllValuesFalse();
     this.createCharacter = true;
+  }
+  showRandomEvent() {
+    this.makeAllValuesFalse();
+    this.randomEvent = true;
   }
 }
 

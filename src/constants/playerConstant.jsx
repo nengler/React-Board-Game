@@ -34,6 +34,9 @@ class Player {
   increaseGold(goldAdded) {
     this.gold += goldAdded;
   }
+  decreaseGold(goldToRemove) {
+    this.gold -= goldToRemove;
+  }
   movePlayer(newPosition) {
     this.playerPosition = newPosition;
   }
@@ -95,16 +98,34 @@ class Player {
   }
   improveWeapon(category) {
     if (category === "Attack") {
-      this.weapon.blockMultiplier -= 0.15;
-      this.weapon.damageMultiplier += 0.2;
+      this.weapon.blockMultiplier -= 0.05;
+      this.weapon.damageMultiplier += 0.15;
     } else if (category === "Block") {
-      this.weapon.damageMultiplier -= 0.15;
-      this.weapon.blockMultiplier += 0.2;
+      this.weapon.damageMultiplier -= 0.05;
+      this.weapon.blockMultiplier += 0.15;
     }
 
     this.weapon.blockMultiplier = this.weapon.blockMultiplier.toFixed(2);
     this.weapon.damageMultiplier = this.weapon.damageMultiplier.toFixed(2);
   }
+  heavySmith(category) {
+    if (category === "Attack") {
+      this.weapon.blockMultiplier -= 0.2;
+      this.weapon.damageMultiplier += 0.15;
+    } else if (category === "Block") {
+      this.weapon.damageMultiplier -= 0.2;
+      this.weapon.blockMultiplier += 0.15;
+    }
+
+    this.weapon.blockMultiplier = this.weapon.blockMultiplier.toFixed(2);
+    this.weapon.damageMultiplier = this.weapon.damageMultiplier.toFixed(2);
+  }
+  increaseHealth(healthIncreasedBy) {
+    this.currentHealth += healthIncreasedBy;
+    if (this.currentHealth > this.maxHealth) {
+      this.currentHealth = this.maxHealth;
+    }
+  }
 }
 
-export const player = new Player("", 10, 2, [strike, defend], 24, dagger, 0, 1);
+export const player = new Player("", 25, 2, [strike, defend], 24, dagger, 0, 1);

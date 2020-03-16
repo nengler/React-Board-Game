@@ -1,0 +1,17 @@
+.random-event-description {
+  background-color: $card-bg;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 1rem 0;
+  margin-top: 2%;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+}
+
+.event-option {
+  border-radius: 10px;
+  border: 3px solid $card-bg2;
+  padding: 1rem 0.5rem;
+  margin: 1rem 0;
+  text-align: left;
+}

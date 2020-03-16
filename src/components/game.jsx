@@ -6,7 +6,7 @@ import Inventory from "./inventory";
 import Shop from "./shop";
 import DiscardCard from "./discardCard";
 import RestChoice from "./restChoice";
-import { potions } from "../constants/itemConstants";
+import RandomEvent from "./randomEvent";
 import FightBoard from "./fightBoard";
 import { enemies, bosses } from "../constants/monsters";
 import { player } from "../constants/playerConstant";
@@ -19,13 +19,14 @@ import { shop } from "../constants/shop";
 import { boardObject } from "../constants/boardObject";
 import { activityObject } from "../constants/activityObject";
 import { MonsterContainerObject } from "../constants/monsterContainerObject";
+import cloneDeep from "lodash/cloneDeep";
+import { randomEventHolder } from "../constants/randomEvents";
 
 /*
 TODO:
-add synergies
 make room not completely random with amount of enemies and not enemies
-random events
 floors
+new category of items: spells (maybe, wait on this)
 */
 
 class Game extends Component {
@@ -37,7 +38,8 @@ class Game extends Component {
     gameBoard: null,
     chatMessage: "",
     treasure: treasure,
-    shop: shop
+    shop: shop,
+    randomEvents: randomEventHolder
   };
 
   handleChange = event => {
@@ -189,10 +191,10 @@ class Game extends Component {
   createBoard(primaryDirections, secondaryDirection, gameBoard) {
     let bigActivities = ["🛏️", "🎊", "🛒"];
     let activitiesObject = new activityObject(bigActivities);
-    activitiesObject.addToArrayXTimes(" ", 2);
+    //activitiesObject.addToArrayXTimes(" ", 2);
     activitiesObject.addToArrayXTimes("?", 2);
-    activitiesObject.addToArrayXTimes("🗡️", 4);
-    activitiesObject.addToArrayXTimes("💰", 2);
+    //activitiesObject.addToArrayXTimes("🗡️", 4);
+    //activitiesObject.addToArrayXTimes("💰", 2);
     bigActivities = this.randomizer(bigActivities);
     primaryDirections.forEach(direction => {
       gameBoard = this.createPath(gameBoard, direction, activitiesObject);
@@ -300,22 +302,28 @@ class Game extends Component {
     let treasure = this.state.treasure;
     let shop = this.state.shop;
     let enemiesContainer = new MonsterContainerObject();
+    let randomEvents = this.state.randomEvents;
     enemiesContainer.addMonsters(enemies);
     enemiesContainer.addBosses(bosses);
+    console.log(weaponArray);
     const itemsArray = [...playerMoveArray, ...weaponArray];
+    console.log(itemsArray);
     treasure.itemsToAddToTreasure(itemsArray);
     shop.itemsToAddToShop(itemsArray);
+    console.log(shop);
     screen.moveCharacter();
     let gameBoard = new boardObject(5, 7);
     player.playerPosition = (gameBoard.board.length - 1) / 2;
     gameBoard = this.createFloor(gameBoard);
+    randomEvents.randomizeEvents();
     this.setState({
       screen,
       treasure,
       shop,
       player,
       gameBoard,
-      enemiesContainer
+      enemiesContainer,
+      randomEvents
     });
   };
 
@@ -341,10 +349,11 @@ class Game extends Component {
         this.addToChatBox("found gold");
         break;
       case "?":
+        /*
         let potion = potions[Math.floor(Math.random() * 2)];
         player.addToInventory(potion);
-        this.setState({ player });
-        this.addToChatBox("found " + potion.name);
+        this.setState({ player });*/
+        screen.showRandomEvent();
         break;
       case "🗡️":
         screen.fightScreen();
@@ -466,10 +475,12 @@ class Game extends Component {
   };
 
   handleInventoryClick = (item, index) => {
+    console.log(item);
     let player = this.state.player;
     if (item.constructor.name === "Potion") {
       player.drinkPotion(item, index);
     } else if (item.constructor.name === "Weapon") {
+      console.log("hey;=");
       player.changeWeaponFromMenu(item, index);
     }
     this.setState({ player });
@@ -563,6 +574,8 @@ class Game extends Component {
   handleEnemyDeath(currentEnemy) {
     let screen = this.state.screen;
     let treasure = this.state.treasure;
+    let player = this.state.player;
+    player.increaseGold(currentEnemy.getMoneyDropped());
     if (currentEnemy.isABoss) {
       screen.showRewads();
       treasure.showRare();
@@ -576,16 +589,19 @@ class Game extends Component {
     this.setState({
       screen,
       currentEnemy,
-      treasure
+      treasure,
+      player
     });
   }
 
   calculateDamage(move, weapon) {
     let damage = move.damage * move.amountOfHits * weapon.damageMultiplier;
+    damage = Math.floor(damage);
     if (weapon.name === move.synergyItem) {
       damage = damage * 1.5;
+      damage = Math.ceil(damage);
     }
-    return Math.floor(damage);
+    return damage;
   }
 
   handleAttackCardClick = (
@@ -643,6 +659,7 @@ class Game extends Component {
   }
 
   handleTreasureClick = treasureItem => {
+    console.log(treasureItem);
     let player = this.state.player;
     let screen = this.state.screen;
     let treasure = this.state.treasure;
@@ -655,11 +672,14 @@ class Game extends Component {
         this.handlePlayerInventory();
       }
     } else if (treasureItem.constructor.name === "Weapon") {
-      player.changeWeapon(treasureItem);
+      let weapon = cloneDeep(treasureItem);
+      player.changeWeapon(weapon);
     }
     screen.endRewards();
     treasure.increaseIndex();
-    this.setState({ player, screen, treasure });
+    this.setState({ player, screen, treasure }, () => {
+      console.log(this.state.player);
+    });
   };
 
   handleNoTreasureClick = () => {
@@ -690,11 +710,13 @@ class Game extends Component {
           }
           break;
         case "Weapon":
-          player.changeWeapon(shopItem);
+          let weapon = cloneDeep(shopItem);
+          player.changeWeapon(weapon);
           break;
         default:
           break;
       }
+      player.decreaseGold(shopItem.cost);
       shop.shopItems.splice(index, 1);
       shop.decreaseItemsToShow();
       this.setState({ player, shop });
@@ -725,6 +747,58 @@ class Game extends Component {
     screen.moveCharacter();
     this.addToChatBox("Player Improved " + weaponName);
     this.setState({ screen, player });
+  };
+
+  handleRandomEventClick = (eventAction, eventCategory) => {
+    let screen = this.state.screen;
+    let randomEvents = this.state.randomEvents;
+    let player = this.state.player;
+    let backToBoard = true;
+    let stayInEvent = false;
+    if (eventAction !== "WalkAway") {
+      switch (eventCategory) {
+        case "HeavySmither":
+          if (eventAction === "HeavyDamageIncrease") {
+            player.heavySmith("Attack");
+          } else if (eventAction === "HeavyBlockIncrease") {
+            player.heavySmith("Block");
+          }
+          break;
+        case "HpLossForWeapon":
+          player.changeWeapon(eventAction);
+          player.currentHealth -= eventAction.cost / 10;
+          break;
+        case "FreeMove":
+          player.addMove(eventAction);
+          if (player.playerMoves.length > 4) {
+            this.handlePlayerInventory();
+          }
+          break;
+        case "HealingForCoins":
+          if (eventAction === "quarterHeal" && player.gold >= 50) {
+            player.increaseHealth(Math.floor(player.maxHealth / 4));
+          } else if (eventAction === "halfHeal" && player.gold >= 50) {
+            player.increaseHealth(Math.floor(player.maxHealth / 2));
+          } else {
+            this.addToChatBox("player cannot afford selection");
+            backToBoard = false;
+            stayInEvent = true;
+          }
+          break;
+        case "FreePotion":
+          player.addToInventory(eventAction);
+          break;
+        default:
+          break;
+      }
+    }
+    if (!stayInEvent) {
+      randomEvents.increaseRandomEventCounter();
+    }
+    if (backToBoard) {
+      screen.moveCharacter();
+    }
+    this.setState({ screen, randomEvents, player });
   };
 
   componentDidMount() {
@@ -837,6 +911,12 @@ class Game extends Component {
                         weapon={this.state.player.weapon}
                         onRestClick={this.handleRestClick}
                         onSmithClick={this.handleSmithClick}
+                      />
+                    )}
+                    {this.state.screen.randomEvent && (
+                      <RandomEvent
+                        randomEvent={this.state.randomEvents}
+                        onEventClick={this.handleRandomEventClick}
                       />
                     )}
                   </div>
