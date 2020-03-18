@@ -118,7 +118,7 @@ export const sideLunge = new Attack(
   "Long Sword",
   "Rare",
   125,
-  9,
+  7,
   1
 );
 
@@ -207,7 +207,7 @@ export const defend = new Block(
   "Big Shield",
   "Starting-Card",
   0,
-  3
+  4
 );
 
 export const blockStance = new Block(
@@ -217,7 +217,7 @@ export const blockStance = new Block(
   "Sword",
   "Common",
   30,
-  4
+  5
 );
 
 export const wall = new Block(
@@ -227,7 +227,7 @@ export const wall = new Block(
   "Big Shield",
   "Common",
   30,
-  9
+  10
 );
 
 export const quickBlock = new Block(
@@ -237,10 +237,10 @@ export const quickBlock = new Block(
   "Small Shield",
   "Rare",
   75,
-  8
+  7
 );
 
-export const parry = new Block("Parry", "pp", 1, "Dagger", "Rare", 95, 8);
+export const parry = new Block("Parry", "pp", 1, "Dagger", "Rare", 95, 7);
 
 export const barricade = new Block(
   "Barricade",
@@ -249,7 +249,7 @@ export const barricade = new Block(
   "Big shield",
   "Rare",
   100,
-  10
+  11
 );
 
 export const dualHandedBlock = new Block(

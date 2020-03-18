@@ -6,7 +6,7 @@ class Potion {
   }
 }
 
-export const healingPotion = new Potion("Healing Potion", "health", 2);
+export const healingPotion = new Potion("Healing Potion", "health", 10);
 const strengthPotion = new Potion("Strength Potion", "strength", 2);
 
 export const potions = [healingPotion, strengthPotion];

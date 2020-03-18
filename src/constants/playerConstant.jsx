@@ -1,6 +1,12 @@
 import { strike, defend } from "../constants/moves";
 import { dagger } from "../constants/weapons";
 
+const playerStartingHealth = 25;
+const playerStartingMana = 2;
+const playerStartingGold = 30;
+const playerStartingWeapon = dagger;
+const playerStartingMoves = [strike, defend];
+
 class Player {
   constructor(
     playerName,
@@ -76,26 +82,29 @@ class Player {
   }
   handlePlayerDeath() {
     this.playerName = "";
-    this.currentHealth = 10;
-    this.maxHealth = 10;
-    this.maxMana = 2;
-    this.currentMana = 2;
+    this.currentHealth = playerStartingHealth;
+    this.maxHealth = playerStartingHealth;
+    this.maxMana = playerStartingMana;
+    this.currentMana = playerStartingMana;
     this.playerInventory = [];
-    this.playerMoves = [strike, defend];
+    this.playerMoves = playerStartingMoves;
     this.playerPosition = 24;
-    this.weapon = dagger;
+    this.weapon = playerStartingWeapon;
     this.gold = 0;
     this.block = 0;
   }
   fullHeal() {
     this.currentHealth = this.maxHealth;
   }
+
   getCurrentLevel() {
     return this.level;
   }
+
   discardCard(moveToDiscard) {
     this.playerMoves.splice(moveToDiscard, 1);
   }
+
   improveWeapon(category) {
     if (category === "Attack") {
       this.weapon.blockMultiplier -= 0.05;
@@ -105,9 +114,14 @@ class Player {
       this.weapon.blockMultiplier += 0.15;
     }
 
-    this.weapon.blockMultiplier = this.weapon.blockMultiplier.toFixed(2);
-    this.weapon.damageMultiplier = this.weapon.damageMultiplier.toFixed(2);
+    this.weapon.blockMultiplier = parseFloat(
+      this.weapon.blockMultiplier.toFixed(2)
+    );
+    this.weapon.damageMultiplier = parseFloat(
+      this.weapon.damageMultiplier.toFixed(2)
+    );
   }
+
   heavySmith(category) {
     if (category === "Attack") {
       this.weapon.blockMultiplier -= 0.2;
@@ -116,10 +130,14 @@ class Player {
       this.weapon.damageMultiplier -= 0.2;
       this.weapon.blockMultiplier += 0.15;
     }
-
-    this.weapon.blockMultiplier = this.weapon.blockMultiplier.toFixed(2);
-    this.weapon.damageMultiplier = this.weapon.damageMultiplier.toFixed(2);
+    this.weapon.blockMultiplier = parseFloat(
+      this.weapon.blockMultiplier.toFixed(2)
+    );
+    this.weapon.damageMultiplier = parseFloat(
+      this.weapon.damageMultiplier.toFixed(2)
+    );
   }
+
   increaseHealth(healthIncreasedBy) {
     this.currentHealth += healthIncreasedBy;
     if (this.currentHealth > this.maxHealth) {
@@ -128,4 +146,13 @@ class Player {
   }
 }
 
-export const player = new Player("", 25, 2, [strike, defend], 24, dagger, 0, 1);
+export const player = new Player(
+  "",
+  playerStartingHealth,
+  playerStartingMana,
+  playerStartingMoves,
+  24,
+  playerStartingWeapon,
+  playerStartingGold,
+  1
+);

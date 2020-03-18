@@ -27,7 +27,7 @@ class ShowScreen {
     this.characterMoving = true;
   }
   fightScreen() {
-    this.characterMoving = false;
+    this.makeAllValuesFalse();
     this.characterFighting = true;
   }
   endFightScreen() {

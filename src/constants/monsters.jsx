@@ -1,12 +1,15 @@
 import {
   nullBoy,
-  strike,
+  quickScratch,
   defend,
   slither,
   quickBlock,
-  sideLunge
+  sideLunge,
+  kneeBreaker,
+  lowBlow,
+  crossSwipe
 } from "../constants/moves";
-import { claws } from "../constants/weapons";
+import { claws, longSword } from "../constants/weapons";
 
 export class Monster {
   constructor(
@@ -61,8 +64,7 @@ const cockRoach = new Monster(
   "CockRoach",
   25,
   claws,
-
-  [strike, nullBoy, defend],
+  [quickScratch, nullBoy, defend],
   1,
   false,
   [10, 30]
@@ -83,3 +85,17 @@ const redDevil = new Monster(
   [50, 100]
 );
 export const bosses = [redDevil];
+
+//RANDOM EVENT ENEMIES
+
+const smither = new Monster(
+  "Smither",
+  60,
+  longSword,
+  [lowBlow, crossSwipe, kneeBreaker],
+  "Smith",
+  true,
+  [60, 80]
+);
+
+export const randomEventMonsters = [smither];

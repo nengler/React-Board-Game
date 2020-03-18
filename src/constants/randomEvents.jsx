@@ -50,7 +50,6 @@ const heavySmither = new RandomEvents(
 );
 
 let randomWeaponNumbers = getRandomNumbers(weaponArray.length);
-console.log(randomWeaponNumbers);
 
 const salesMan = new RandomEvents(
   "A Bargener from the local shop wants to sell you a weapon... for some of your blood",
@@ -116,11 +115,8 @@ function getRandomNumbers(lengthOfArray) {
   let randomNumbers = [];
   while (keepLooping) {
     let randomNumber = Math.floor(Math.random() * Math.floor(lengthOfArray));
-    console.log(randomNumber);
     if (randomNumbers[0] !== null && randomNumbers[0] !== randomNumber) {
-      console.log("init");
       randomNumbers.push(randomNumber);
-      console.log(randomNumbers);
       if (randomNumbers.length === 2) {
         keepLooping = false;
       }

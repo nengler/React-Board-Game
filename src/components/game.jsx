@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import cloneDeep from "lodash/cloneDeep";
 import GameBoard from "./gameBoard";
 import Player from "./player";
 import TreasureChest from "./treasureChest";
@@ -8,7 +9,7 @@ import DiscardCard from "./discardCard";
 import RestChoice from "./restChoice";
 import RandomEvent from "./randomEvent";
 import FightBoard from "./fightBoard";
-import { enemies, bosses } from "../constants/monsters";
+import { enemies, bosses, randomEventMonsters } from "../constants/monsters";
 import { player } from "../constants/playerConstant";
 import { screen } from "../constants/showScreen";
 import MovesInventory from "./movesInventory";
@@ -19,7 +20,8 @@ import { shop } from "../constants/shop";
 import { boardObject } from "../constants/boardObject";
 import { activityObject } from "../constants/activityObject";
 import { MonsterContainerObject } from "../constants/monsterContainerObject";
-import cloneDeep from "lodash/cloneDeep";
+import { BossContainerObject } from "../constants/bossContainerObject";
+import { RandomEventEnemyContainer } from "../constants/randomEventEnemyContainer";
 import { randomEventHolder } from "../constants/randomEvents";
 
 /*
@@ -27,12 +29,15 @@ TODO:
 make room not completely random with amount of enemies and not enemies
 floors
 new category of items: spells (maybe, wait on this)
+might have to make enemies more powerful
 */
 
 class Game extends Component {
   state = {
     player: player,
     enemiesContainer: null,
+    bossContainer: null,
+    randomEventEnemiesContainer: null,
     currentEnemy: null,
     screen: screen,
     gameBoard: null,
@@ -88,6 +93,10 @@ class Game extends Component {
   }
 
   createPath(gameBoard, direction, activitiesObject) {
+    activitiesObject.activityArray = this.randomizer(
+      activitiesObject.activityArray
+    );
+    console.log(activitiesObject.activityArray);
     let stepDirections = this.createDirections(
       direction,
       gameBoard.width,
@@ -114,6 +123,7 @@ class Game extends Component {
       gameBoard.changeBoardSquare(activitiesObject.getActivity(), position);
     });
     gameBoard.changeBoardSquare(activitiesObject.getBigActivity(), position);
+    activitiesObject.resetActivitiesIndex();
     return gameBoard;
   }
 
@@ -191,10 +201,16 @@ class Game extends Component {
   createBoard(primaryDirections, secondaryDirection, gameBoard) {
     let bigActivities = ["🛏️", "🎊", "🛒"];
     let activitiesObject = new activityObject(bigActivities);
-    //activitiesObject.addToArrayXTimes(" ", 2);
-    activitiesObject.addToArrayXTimes("?", 2);
-    //activitiesObject.addToArrayXTimes("🗡️", 4);
-    //activitiesObject.addToArrayXTimes("💰", 2);
+    let spacesPerDirection =
+      Math.floor(gameBoard.width / 2) + Math.floor(gameBoard.height / 2);
+    console.log(spacesPerDirection);
+    //activitiesObject.addToArrayXTimes(" ", 1);
+    activitiesObject.addToArrayXTimes("?", Math.floor(spacesPerDirection / 2));
+    activitiesObject.addToArrayXTimes("🗡️", spacesPerDirection);
+    activitiesObject.addToArrayXTimes(
+      "💰",
+      Math.floor(spacesPerDirection / 2) - 1
+    );
     bigActivities = this.randomizer(bigActivities);
     primaryDirections.forEach(direction => {
       gameBoard = this.createPath(gameBoard, direction, activitiesObject);
@@ -302,17 +318,17 @@ class Game extends Component {
     let treasure = this.state.treasure;
     let shop = this.state.shop;
     let enemiesContainer = new MonsterContainerObject();
+    let bossContainer = new BossContainerObject();
+    let randomEventEnemiesContainer = new RandomEventEnemyContainer();
     let randomEvents = this.state.randomEvents;
     enemiesContainer.addMonsters(enemies);
-    enemiesContainer.addBosses(bosses);
-    console.log(weaponArray);
+    bossContainer.addEnemies(bosses);
+    randomEventEnemiesContainer.addEnemies(randomEventMonsters);
     const itemsArray = [...playerMoveArray, ...weaponArray];
-    console.log(itemsArray);
     treasure.itemsToAddToTreasure(itemsArray);
     shop.itemsToAddToShop(itemsArray);
-    console.log(shop);
     screen.moveCharacter();
-    let gameBoard = new boardObject(5, 7);
+    let gameBoard = new boardObject(5, 5);
     player.playerPosition = (gameBoard.board.length - 1) / 2;
     gameBoard = this.createFloor(gameBoard);
     randomEvents.randomizeEvents();
@@ -323,6 +339,8 @@ class Game extends Component {
       player,
       gameBoard,
       enemiesContainer,
+      bossContainer,
+      randomEventEnemiesContainer,
       randomEvents
     });
   };
@@ -341,7 +359,6 @@ class Game extends Component {
   handleSquareProperty = square => {
     let player = this.state.player;
     let screen = this.state.screen;
-    let enemiesContainer = this.state.enemiesContainer;
     switch (square) {
       case "💰":
         player.increaseGold(15);
@@ -349,18 +366,15 @@ class Game extends Component {
         this.addToChatBox("found gold");
         break;
       case "?":
-        /*
-        let potion = potions[Math.floor(Math.random() * 2)];
-        player.addToInventory(potion);
-        this.setState({ player });*/
         screen.showRandomEvent();
         break;
       case "🗡️":
         screen.fightScreen();
-        let currentEnemy = enemiesContainer.getMonster(
-          this.state.player.getCurrentLevel()
+        let currentEnemy = cloneDeep(
+          this.state.enemiesContainer.getMonster(
+            this.state.player.getCurrentLevel()
+          )
         );
-        currentEnemy.currentHealth = currentEnemy.maxHealth;
         this.setState({ currentEnemy, screen });
         break;
       case "🎊":
@@ -382,10 +396,9 @@ class Game extends Component {
         break;
       case "⚔️":
         screen.fightScreen();
-        let boss = enemiesContainer.getBoss(
-          this.state.player.getCurrentLevel()
+        let boss = cloneDeep(
+          this.state.bossContainer.getEnemy(this.state.player.getCurrentLevel())
         );
-        boss.currentHealth = boss.maxHealth;
         this.setState({ currentEnemy: boss, screen });
         break;
       case "🚪":
@@ -595,8 +608,8 @@ class Game extends Component {
   }
 
   calculateDamage(move, weapon) {
-    let damage = move.damage * move.amountOfHits * weapon.damageMultiplier;
-    damage = Math.floor(damage);
+    let damage =
+      Math.floor(move.damage * weapon.damageMultiplier) * move.amountOfHits;
     if (weapon.name === move.synergyItem) {
       damage = damage * 1.5;
       damage = Math.ceil(damage);
@@ -762,16 +775,29 @@ class Game extends Component {
             player.heavySmith("Attack");
           } else if (eventAction === "HeavyBlockIncrease") {
             player.heavySmith("Block");
+          } else if (eventAction === "FightSmither") {
+            let currentEnemy = this.state.randomEventEnemiesContainer.getEnemy(
+              "Smith"
+            );
+            screen.fightScreen();
+            backToBoard = false;
+            this.setState({ currentEnemy });
           }
           break;
         case "HpLossForWeapon":
           player.changeWeapon(eventAction);
           player.currentHealth -= eventAction.cost / 10;
+          if (this.checkIfDead(player.currentHealth)) {
+            player.handlePlayerDeath();
+            screen.characterDeath();
+            backToBoard = false;
+          }
           break;
         case "FreeMove":
           player.addMove(eventAction);
           if (player.playerMoves.length > 4) {
             this.handlePlayerInventory();
+            backToBoard = false;
           }
           break;
         case "HealingForCoins":
@@ -810,7 +836,7 @@ class Game extends Component {
   }
 
   render() {
-    const disabledOption = this.state.playerName === "";
+    const disableStart = this.state.player.playerName === "";
     return (
       <div className="container-fluid">
         {this.state.screen.createCharacter ? (
@@ -822,14 +848,14 @@ class Game extends Component {
               value={this.state.playerName}
               onChange={this.handleChange}
               onKeyPress={event => {
-                if (event.key === "Enter") {
+                if (event.key === "Enter" && !disableStart) {
                   this.startGame();
                 }
               }}
             ></input>
             <button
               onClick={this.startGame}
-              disabled={disabledOption}
+              disabled={disableStart}
               className="btn btn-danger"
             >
               Start Game
