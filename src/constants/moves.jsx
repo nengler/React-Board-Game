@@ -66,7 +66,7 @@ export const slither = new Attack(
 );
 
 export const strike = new Attack(
-  "strike",
+  "Strike",
   "description for strike Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab quidem dolorem eaque quam cumque minus, omnis consequuntur sequi modi illum",
   1,
   "Sword",
@@ -201,7 +201,7 @@ export const bloodyMess = new Attack(
 
 //BLOCKS
 export const defend = new Block(
-  "defend",
+  "Defend",
   "defend description",
   1,
   "Big Shield",

@@ -29,10 +29,10 @@ class fightBoard extends Component {
     let typeStyle = {};
     switch (moveType) {
       case "Attack":
-        typeStyle.textDecorationColor = "#ff3333";
+        typeStyle.color = "#ff3333";
         break;
       case "Block":
-        typeStyle.textDecorationColor = "#0080ff";
+        typeStyle.color = "#0080ff";
         break;
       default:
         break;
@@ -80,14 +80,14 @@ class fightBoard extends Component {
                   </div>
                 </div>
                 <div className="enemy-block">
-                  Block: {this.props.enemy.block}
+                  <b>Block:</b> {this.props.enemy.block}
                 </div>
               </div>
             </li>
             <li>
-              <b>Next Enemy Move:</b>
+              <span className="next-enemy-move">Next Enemy Move: </span>
               <span
-                className="enemy-move-name"
+                className="next-enemy-move"
                 style={this.getEnemyMoveStyle(enemyMove.constructor.name)}
               >
                 {enemyMove.name}
@@ -194,21 +194,21 @@ class fightBoard extends Component {
                   </div>
                 )
               )}
-              <div className="end-turn-button">
-                <button
-                  className="btn btn-primary end-turn-button"
-                  onClick={() =>
-                    this.props.onEnemyAttack(
-                      enemyMove,
-                      this.props.block,
-                      this.props.enemy.weapon
-                    )
-                  }
-                >
-                  End turn
-                </button>
-              </div>
             </div>
+          </div>
+          <div className="end-turn-button">
+            <button
+              className="btn btn-primary end-turn-button"
+              onClick={() =>
+                this.props.onEnemyAttack(
+                  enemyMove,
+                  this.props.block,
+                  this.props.enemy.weapon
+                )
+              }
+            >
+              End turn
+            </button>
           </div>
         </div>
 
@@ -220,8 +220,7 @@ class fightBoard extends Component {
           >
             <b>Mana:</b> {this.props.currentMana} / {this.props.maxMana}
           </span>
-          <br />
-          <span className="blocking">
+          <span className="blocking ml-4">
             <b>Block:</b> {this.props.block}
           </span>
         </div>

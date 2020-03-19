@@ -16,6 +16,7 @@ class ShowScreen {
     this.characterDiscardCard = false;
     this.characterRest = false;
     this.randomEvent = false;
+    this.goToNextFloor = false;
   }
   makeAllValuesFalse() {
     Object.keys(this).forEach(key => {
@@ -65,6 +66,10 @@ class ShowScreen {
   showRandomEvent() {
     this.makeAllValuesFalse();
     this.randomEvent = true;
+  }
+  showOptionToGoToNextFloor() {
+    this.makeAllValuesFalse();
+    this.goToNextFloor = true;
   }
 }
 

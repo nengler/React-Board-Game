@@ -77,7 +77,7 @@ export const enemies = [cockRoach, worm];
 
 const redDevil = new Monster(
   "Red Devil",
-  50,
+  1,
   claws,
   [quickBlock, sideLunge],
   1,

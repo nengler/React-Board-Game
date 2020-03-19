@@ -27,7 +27,6 @@ import { randomEventHolder } from "../constants/randomEvents";
 /*
 TODO:
 make room not completely random with amount of enemies and not enemies
-floors
 new category of items: spells (maybe, wait on this)
 might have to make enemies more powerful
 */
@@ -96,7 +95,6 @@ class Game extends Component {
     activitiesObject.activityArray = this.randomizer(
       activitiesObject.activityArray
     );
-    console.log(activitiesObject.activityArray);
     let stepDirections = this.createDirections(
       direction,
       gameBoard.width,
@@ -203,7 +201,6 @@ class Game extends Component {
     let activitiesObject = new activityObject(bigActivities);
     let spacesPerDirection =
       Math.floor(gameBoard.width / 2) + Math.floor(gameBoard.height / 2);
-    console.log(spacesPerDirection);
     //activitiesObject.addToArrayXTimes(" ", 1);
     activitiesObject.addToArrayXTimes("?", Math.floor(spacesPerDirection / 2));
     activitiesObject.addToArrayXTimes("🗡️", spacesPerDirection);
@@ -372,7 +369,7 @@ class Game extends Component {
         screen.fightScreen();
         let currentEnemy = cloneDeep(
           this.state.enemiesContainer.getMonster(
-            this.state.player.getCurrentLevel()
+            this.state.gameBoard.getCurrentLevel()
           )
         );
         this.setState({ currentEnemy, screen });
@@ -397,12 +394,15 @@ class Game extends Component {
       case "⚔️":
         screen.fightScreen();
         let boss = cloneDeep(
-          this.state.bossContainer.getEnemy(this.state.player.getCurrentLevel())
+          this.state.bossContainer.getEnemy(
+            this.state.gameBoard.getCurrentLevel()
+          )
         );
         this.setState({ currentEnemy: boss, screen });
         break;
       case "🚪":
-        console.log("heyo");
+        screen.showOptionToGoToNextFloor();
+        this.setState({ screen });
         break;
       default:
         break;
@@ -410,7 +410,6 @@ class Game extends Component {
   };
 
   checkIfLegalMovement = (proposedPosition, playerPosition, square) => {
-    console.log("init");
     if (
       (proposedPosition === playerPosition + 1 ||
         proposedPosition === playerPosition - 1 ||
@@ -420,7 +419,6 @@ class Game extends Component {
     ) {
       return true;
     }
-    console.log("false");
     return false;
   };
 
@@ -488,12 +486,10 @@ class Game extends Component {
   };
 
   handleInventoryClick = (item, index) => {
-    console.log(item);
     let player = this.state.player;
     if (item.constructor.name === "Potion") {
       player.drinkPotion(item, index);
     } else if (item.constructor.name === "Weapon") {
-      console.log("hey;=");
       player.changeWeaponFromMenu(item, index);
     }
     this.setState({ player });
@@ -564,7 +560,7 @@ class Game extends Component {
 
   calculateBlock(move, weapon) {
     let block = move.blockAmount * weapon.blockMultiplier;
-    if (weapon === move.synergyItem) {
+    if (weapon.name === move.synergyItem) {
       block *= 1.5;
     }
     return Math.floor(block);
@@ -672,7 +668,6 @@ class Game extends Component {
   }
 
   handleTreasureClick = treasureItem => {
-    console.log(treasureItem);
     let player = this.state.player;
     let screen = this.state.screen;
     let treasure = this.state.treasure;
@@ -690,9 +685,7 @@ class Game extends Component {
     }
     screen.endRewards();
     treasure.increaseIndex();
-    this.setState({ player, screen, treasure }, () => {
-      console.log(this.state.player);
-    });
+    this.setState({ player, screen, treasure });
   };
 
   handleNoTreasureClick = () => {
@@ -827,6 +820,28 @@ class Game extends Component {
     this.setState({ screen, randomEvents, player });
   };
 
+  handleGoToNextFloor = () => {
+    console.log("heyo");
+    let gameBoard = this.state.gameBoard;
+    let player = this.state.player;
+    let screen = this.state.screen;
+    gameBoard.nextLevel();
+    player.playerPosition = (gameBoard.board.length - 1) / 2;
+    gameBoard = this.createFloor(gameBoard);
+    screen.moveCharacter();
+    this.setState({ gameBoard, player, screen });
+  };
+
+  handleCancelGoingToNextFloor = () => {
+    let screen = this.state.screen;
+    screen.moveCharacter();
+    this.setState({ screen });
+  };
+
+  contactMe = () => {
+    console.log("heyo");
+  };
+
   componentDidMount() {
     document.addEventListener("keydown", this.arrowKeyMovement);
   }
@@ -840,26 +855,40 @@ class Game extends Component {
     return (
       <div className="container-fluid">
         {this.state.screen.createCharacter ? (
-          <div className="playerInfo ">
-            <input
-              type="text"
-              name="playerName"
-              className="form-control"
-              value={this.state.playerName}
-              onChange={this.handleChange}
-              onKeyPress={event => {
-                if (event.key === "Enter" && !disableStart) {
-                  this.startGame();
-                }
-              }}
-            ></input>
-            <button
-              onClick={this.startGame}
-              disabled={disableStart}
-              className="btn btn-danger"
-            >
-              Start Game
-            </button>
+          <div className="homepage-centering">
+            <div>
+              <h1>GAME NAME</h1>
+            </div>
+            <div className="player-name-input ">
+              <input
+                type="text"
+                name="playerName"
+                className="form-control"
+                value={this.state.playerName}
+                onChange={this.handleChange}
+                placeholder="Enter Name And Start Game"
+                onKeyPress={event => {
+                  if (event.key === "Enter" && !disableStart) {
+                    this.startGame();
+                  }
+                }}
+              ></input>
+              <div className="home-buttons">
+                <button
+                  onClick={this.startGame}
+                  disabled={disableStart}
+                  className="btn btn-danger mr-2"
+                >
+                  Start Game
+                </button>
+                <button
+                  onClick={this.contactMe}
+                  className="btn btn-primary ml-2"
+                >
+                  Contact Me!
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="game-container">
@@ -870,6 +899,7 @@ class Game extends Component {
                   maxHealth={this.state.player.maxHealth}
                   currentHealth={this.state.player.currentHealth}
                   gold={this.state.player.gold}
+                  level={this.state.gameBoard.level}
                 />
               </div>
             </div>
@@ -908,13 +938,15 @@ class Game extends Component {
                       moves={this.state.player.playerMoves}
                     />
                   </div>
-                  <div className="col-8 main-component">
+                  <div className="col-md-8 main-component">
                     {this.state.screen.characterMoving && (
-                      <GameBoard
-                        gameBoard={this.state.gameBoard.board}
-                        boardWidth={this.state.gameBoard.width}
-                        playerMovement={this.handleMovement}
-                      />
+                      <div className="flexit">
+                        <GameBoard
+                          gameBoard={this.state.gameBoard.board}
+                          boardWidth={this.state.gameBoard.width}
+                          playerMovement={this.handleMovement}
+                        />
+                      </div>
                     )}
                     {this.state.screen.characterRewards && (
                       <TreasureChest
@@ -944,6 +976,22 @@ class Game extends Component {
                         randomEvent={this.state.randomEvents}
                         onEventClick={this.handleRandomEventClick}
                       />
+                    )}
+                    {this.state.screen.goToNextFloor && (
+                      <div className="show-floor-options">
+                        <div
+                          className="floor-choice"
+                          onClick={this.handleGoToNextFloor}
+                        >
+                          Go TO Next Floor
+                        </div>
+                        <div
+                          className="floor-choice"
+                          onClick={this.handleCancelGoingToNextFloor}
+                        >
+                          Cancel
+                        </div>
+                      </div>
                     )}
                   </div>
                   <div className="col-2 inventory">

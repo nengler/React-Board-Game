@@ -1,11 +1,13 @@
 import { strike, defend } from "../constants/moves";
 import { dagger } from "../constants/weapons";
 
+/*
 const playerStartingHealth = 25;
 const playerStartingMana = 2;
 const playerStartingGold = 30;
 const playerStartingWeapon = dagger;
 const playerStartingMoves = [strike, defend];
+*/
 
 class Player {
   constructor(
@@ -15,8 +17,7 @@ class Player {
     playerMoves,
     playerPosition,
     weapon,
-    gold,
-    level
+    gold
   ) {
     this.playerName = playerName;
     this.currentHealth = maxHealth;
@@ -29,7 +30,6 @@ class Player {
     this.weapon = weapon;
     this.gold = gold;
     this.block = 0;
-    this.level = level;
   }
   setPlayerName(newName) {
     this.playerName = newName;
@@ -82,23 +82,19 @@ class Player {
   }
   handlePlayerDeath() {
     this.playerName = "";
-    this.currentHealth = playerStartingHealth;
-    this.maxHealth = playerStartingHealth;
-    this.maxMana = playerStartingMana;
-    this.currentMana = playerStartingMana;
+    this.currentHealth = 25;
+    this.maxHealth = 25;
+    this.maxMana = 2;
+    this.currentMana = 2;
     this.playerInventory = [];
-    this.playerMoves = playerStartingMoves;
+    this.playerMoves = [strike, defend];
     this.playerPosition = 24;
-    this.weapon = playerStartingWeapon;
+    this.weapon = dagger;
     this.gold = 0;
     this.block = 0;
   }
   fullHeal() {
     this.currentHealth = this.maxHealth;
-  }
-
-  getCurrentLevel() {
-    return this.level;
   }
 
   discardCard(moveToDiscard) {
@@ -146,13 +142,4 @@ class Player {
   }
 }
 
-export const player = new Player(
-  "",
-  playerStartingHealth,
-  playerStartingMana,
-  playerStartingMoves,
-  24,
-  playerStartingWeapon,
-  playerStartingGold,
-  1
-);
+export const player = new Player("", 25, 2, [strike, defend], 24, dagger, 30);

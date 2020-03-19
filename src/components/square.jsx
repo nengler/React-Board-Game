@@ -20,9 +20,11 @@ class square extends Component {
     return squareClassName;
   };
   render() {
+    const isDisabled = this.props.square === "";
     return (
       <span>
         <button
+          disabled={isDisabled}
           className={this.getSquareClass()}
           onClick={() => {
             this.props.handleClick(this.props.location, this.props.square);

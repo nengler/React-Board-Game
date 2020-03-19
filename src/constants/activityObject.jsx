@@ -11,7 +11,6 @@ export class activityObject {
     }
   }
   getActivity() {
-    console.log(this.activityIndex);
     return this.activityArray[this.activityIndex++];
   }
   getBigActivity() {

@@ -15,9 +15,10 @@ export class boardObject {
     this.bossPosition = position;
   }
 
-  increaseLevel() {
+  nextLevel() {
     this.level += 1;
     this.increaseDimensions();
+    this.board = Array(this.width * this.height).fill("");
   }
 
   increaseDimensions() {
@@ -31,5 +32,9 @@ export class boardObject {
       this.width = 9;
       this.height = 7;
     }
+  }
+
+  getCurrentLevel() {
+    return this.level;
   }
 }

@@ -1,3 +1,8 @@
+body,
+html {
+  height: 100%;
+}
+
 .chat {
   text-align: center;
 }
@@ -19,4 +24,70 @@ textarea {
 
 .fightBoard-div {
   height: 462px;
+}
+
+.show-floor-options {
+  text-align: center;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 100%;
+}
+
+.floor-choice {
+  width: 40%;
+  //margin: 1rem;
+  border-radius: 10px;
+  border: 3px solid $card-bg2;
+  padding: 1rem 0.5rem;
+  cursor: pointer;
+}
+
+.outer {
+  display: table;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.inner {
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+  text-align: center;
+  /*whatever width you want*/
+}
+
+.homepage-centering {
+  position: absolute;
+  top: 30%;
+  left: 30%;
+  width: 40%;
+  text-align: center;
+}
+
+.home-buttons {
+  margin-top: 1rem;
+}
+
+.flexit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+@media only screen and (max-width: 600px) {
+  .homepage-centering {
+    width: 100%;
+    left: 0;
+    padding: 0 10px;
+  }
 }

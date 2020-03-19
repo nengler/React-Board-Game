@@ -15,8 +15,8 @@ class Player extends Component {
 
   render() {
     return (
-      <div className="">
-        <span className="player-name">
+      <div className="player-info">
+        <span>
           <b>Name:</b> {this.props.playerName}
         </span>
         <span className={this.getClassName()}>
@@ -24,6 +24,9 @@ class Player extends Component {
         </span>
         <span className="player-gold">
           <b>Gold:</b> {this.props.gold}
+        </span>
+        <span>
+          <b>Level:</b> {this.props.level}
         </span>
       </div>
     );

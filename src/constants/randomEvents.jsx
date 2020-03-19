@@ -43,7 +43,7 @@ const heavySmither = new RandomEvents(
     "Increase Damage Multiplier by 0.15, Decrease Block Multiplier by 0.20",
     "Increase Block Multiplier by 0.15, Decrease Damage Multiplier by 0.20",
     "Walk Away",
-    "Fight him for his sword"
+    "Fight him for his Equipment"
   ],
   ["HeavyDamageIncrease", "HeavyBlockIncrease", "WalkAway", "FightSmither"],
   "HeavySmither"

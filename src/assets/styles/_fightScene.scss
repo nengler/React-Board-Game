@@ -59,15 +59,11 @@
   padding-left: 1rem;
 }
 
-.enemy-move-name {
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-}
-
 .flex-parent {
   display: flex;
   justify-content: center;
   position: relative;
+  align-items: center;
 }
 
 .outer-card {
@@ -93,12 +89,13 @@ ul {
   border-top: 0.5px solid black;
 }
 
+/*
 .end-turn-button {
   padding: 131px 0;
   position: absolute;
   right: 15px;
 }
-
+*/
 .card-mana-cost {
   text-align: left;
   font-size: 1.25rem;
@@ -124,4 +121,9 @@ ul {
 
 .justify-center {
   justify-content: center;
+}
+
+.next-enemy-move {
+  font-weight: bold;
+  font-size: 1.25rem;
 }
