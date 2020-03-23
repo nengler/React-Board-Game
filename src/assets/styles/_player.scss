@@ -23,3 +23,9 @@
 .player-gold {
   color: gold;
 }
+
+@media only screen and (max-width: 600px) {
+  .player-info {
+    margin: 0;
+  }
+}

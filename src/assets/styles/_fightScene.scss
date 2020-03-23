@@ -89,13 +89,6 @@ ul {
   border-top: 0.5px solid black;
 }
 
-/*
-.end-turn-button {
-  padding: 131px 0;
-  position: absolute;
-  right: 15px;
-}
-*/
 .card-mana-cost {
   text-align: left;
   font-size: 1.25rem;
@@ -126,4 +119,14 @@ ul {
 .next-enemy-move {
   font-weight: bold;
   font-size: 1.25rem;
+}
+
+.synergy-item {
+  text-decoration: underline;
+  text-decoration-color: #e18728;
+}
+
+.conflict-item {
+  text-decoration: underline;
+  text-decoration-color: darkblue;
 }

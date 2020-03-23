@@ -26,6 +26,9 @@ import { randomEventHolder } from "../constants/randomEvents";
 
 /*
 TODO:
+weapons should have categoies
+moves should have categories they are good or bad with
+monsters shoudl be strong or weak against moves or categories
 make room not completely random with amount of enemies and not enemies
 new category of items: spells (maybe, wait on this)
 might have to make enemies more powerful
@@ -559,11 +562,13 @@ class Game extends Component {
   };
 
   calculateBlock(move, weapon) {
-    let block = move.blockAmount * weapon.blockMultiplier;
+    let block = Math.floor(move.blockAmount * weapon.blockMultiplier);
     if (weapon.name === move.synergyItem) {
-      block *= 1.5;
+      block = Math.ceil(block * 1.5);
+    } else if (weapon.category === move.conflictCategory) {
+      block = Math.floor(block * 0.75);
     }
-    return Math.floor(block);
+    return block;
   }
 
   handleBlockCardClick = (playerMove, playerWeapon, currentMana) => {
@@ -607,8 +612,9 @@ class Game extends Component {
     let damage =
       Math.floor(move.damage * weapon.damageMultiplier) * move.amountOfHits;
     if (weapon.name === move.synergyItem) {
-      damage = damage * 1.5;
-      damage = Math.ceil(damage);
+      damage = Math.ceil(damage * 1.5);
+    } else if (weapon.category === move.conflictCategory) {
+      damage = Math.floor(damage * 0.75);
     }
     return damage;
   }
@@ -892,7 +898,7 @@ class Game extends Component {
           </div>
         ) : (
           <div className="game-container">
-            <div className="row">
+            <div className="row first-row">
               <div className="col-12 player-header">
                 <Player
                   playerName={this.state.player.playerName}
@@ -903,9 +909,10 @@ class Game extends Component {
                 />
               </div>
             </div>
+
             {this.state.screen.characterFighting ||
             this.state.screen.characterDiscardCard ? (
-              <div className="row">
+              <div className="row second-row">
                 <div className="col-12 fightBoard-div">
                   {this.state.screen.characterFighting && (
                     <FightBoard
@@ -930,83 +937,80 @@ class Game extends Component {
                 </div>
               </div>
             ) : (
-              <div>
-                <div className="row gameplay">
-                  <div className="col-2">
-                    <MovesInventory
+              <div className="row gameplay second-row">
+                <div className="col-2">
+                  <MovesInventory
+                    weapon={this.state.player.weapon}
+                    moves={this.state.player.playerMoves}
+                  />
+                </div>
+                <div className="col-md-8 main-component">
+                  {this.state.screen.characterMoving && (
+                    <div className="flexit">
+                      <GameBoard
+                        gameBoard={this.state.gameBoard.board}
+                        boardWidth={this.state.gameBoard.width}
+                        playerMovement={this.handleMovement}
+                      />
+                    </div>
+                  )}
+                  {this.state.screen.characterRewards && (
+                    <TreasureChest
+                      treasure={this.state.treasure}
+                      onTreasureClick={this.handleTreasureClick}
+                      onNoTreasure={this.handleNoTreasureClick}
+                    />
+                  )}
+                  {this.state.screen.characterShop && (
+                    <Shop
+                      shop={this.state.shop}
+                      playersMoney={this.state.player.gold}
+                      onShopClick={this.handleShopClick}
+                      exitShop={this.handleExitShopClick}
+                    />
+                  )}
+                  {this.state.screen.characterRest && (
+                    <RestChoice
+                      player={this.state.player}
                       weapon={this.state.player.weapon}
-                      moves={this.state.player.playerMoves}
+                      onRestClick={this.handleRestClick}
+                      onSmithClick={this.handleSmithClick}
                     />
-                  </div>
-                  <div className="col-md-8 main-component">
-                    {this.state.screen.characterMoving && (
-                      <div className="flexit">
-                        <GameBoard
-                          gameBoard={this.state.gameBoard.board}
-                          boardWidth={this.state.gameBoard.width}
-                          playerMovement={this.handleMovement}
-                        />
-                      </div>
-                    )}
-                    {this.state.screen.characterRewards && (
-                      <TreasureChest
-                        treasure={this.state.treasure}
-                        onTreasureClick={this.handleTreasureClick}
-                        onNoTreasure={this.handleNoTreasureClick}
-                      />
-                    )}
-                    {this.state.screen.characterShop && (
-                      <Shop
-                        shop={this.state.shop}
-                        playersMoney={this.state.player.gold}
-                        onShopClick={this.handleShopClick}
-                        exitShop={this.handleExitShopClick}
-                      />
-                    )}
-                    {this.state.screen.characterRest && (
-                      <RestChoice
-                        player={this.state.player}
-                        weapon={this.state.player.weapon}
-                        onRestClick={this.handleRestClick}
-                        onSmithClick={this.handleSmithClick}
-                      />
-                    )}
-                    {this.state.screen.randomEvent && (
-                      <RandomEvent
-                        randomEvent={this.state.randomEvents}
-                        onEventClick={this.handleRandomEventClick}
-                      />
-                    )}
-                    {this.state.screen.goToNextFloor && (
-                      <div className="show-floor-options">
-                        <div
-                          className="floor-choice"
-                          onClick={this.handleGoToNextFloor}
-                        >
-                          Go TO Next Floor
-                        </div>
-                        <div
-                          className="floor-choice"
-                          onClick={this.handleCancelGoingToNextFloor}
-                        >
-                          Cancel
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="col-2 inventory">
-                    <Inventory
-                      playerInventory={this.state.player.playerInventory}
-                      onInventoryClick={this.handleInventoryClick}
+                  )}
+                  {this.state.screen.randomEvent && (
+                    <RandomEvent
+                      randomEvent={this.state.randomEvents}
+                      onEventClick={this.handleRandomEventClick}
                     />
-                  </div>
+                  )}
+                  {this.state.screen.goToNextFloor && (
+                    <div className="show-floor-options">
+                      <div
+                        className="floor-choice"
+                        onClick={this.handleGoToNextFloor}
+                      >
+                        Go TO Next Floor
+                      </div>
+                      <div
+                        className="floor-choice"
+                        onClick={this.handleCancelGoingToNextFloor}
+                      >
+                        Cancel
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="col-2 inventory">
+                  <Inventory
+                    playerInventory={this.state.player.playerInventory}
+                    onInventoryClick={this.handleInventoryClick}
+                  />
                 </div>
               </div>
             )}
-            <div className="row">
+            <div className="row third-row">
               <div className="col-3"></div>
               <div className="col-6">
-                <h3>Messages</h3>
                 <textarea
                   value={this.state.chatMessage}
                   disabled

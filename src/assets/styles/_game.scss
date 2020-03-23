@@ -1,5 +1,8 @@
 body,
-html {
+html,
+#root,
+.container-fluid,
+.game-container {
   height: 100%;
 }
 
@@ -10,7 +13,6 @@ html {
 .gameplay {
   justify-content: center;
   margin-top: 1rem;
-  height: 462px;
 }
 
 textarea {
@@ -18,12 +20,8 @@ textarea {
 }
 
 .main-component {
-  height: 462px;
+  //height: 462px;
   text-align: center;
-}
-
-.fightBoard-div {
-  height: 462px;
 }
 
 .show-floor-options {
@@ -82,6 +80,14 @@ textarea {
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+.second-row {
+  height: 75%;
+}
+
+.third-row {
+  height: 17%;
 }
 
 @media only screen and (max-width: 600px) {

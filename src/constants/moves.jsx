@@ -1,9 +1,18 @@
 class Move {
-  constructor(name, description, manaCost, synergyItem, rarity, cost) {
+  constructor(
+    name,
+    description,
+    manaCost,
+    synergyItem,
+    conflictCategory,
+    rarity,
+    cost
+  ) {
     this.name = name;
     this.description = description;
     this.manaCost = manaCost;
     this.synergyItem = synergyItem;
+    this.conflictCategory = conflictCategory;
     this.rarity = rarity;
     this.cost = cost;
   }
@@ -15,12 +24,21 @@ class Attack extends Move {
     description,
     manaCost,
     synergyItem,
+    conflictCategory,
     rarity,
     cost,
     damage,
     amountOfHits
   ) {
-    super(name, description, manaCost, synergyItem, rarity, cost);
+    super(
+      name,
+      description,
+      manaCost,
+      synergyItem,
+      conflictCategory,
+      rarity,
+      cost
+    );
     this.damage = damage;
     this.amountOfHits = amountOfHits;
   }
@@ -32,11 +50,20 @@ class Block extends Move {
     description,
     manaCost,
     synergyItem,
+    conflictCategory,
     rarity,
     cost,
     blockAmount
   ) {
-    super(name, description, manaCost, synergyItem, rarity, cost);
+    super(
+      name,
+      description,
+      manaCost,
+      synergyItem,
+      conflictCategory,
+      rarity,
+      cost
+    );
     this.blockAmount = blockAmount;
   }
 }
@@ -47,6 +74,7 @@ export const nullBoy = new Attack(
   "Null Boy",
   "Relaxing time :)",
   1,
+  "",
   "",
   "Common",
   0,
@@ -59,6 +87,7 @@ export const slither = new Attack(
   "we slithering",
   1,
   "",
+  "",
   "Common",
   0,
   1,
@@ -70,6 +99,7 @@ export const strike = new Attack(
   "description for strike Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab quidem dolorem eaque quam cumque minus, omnis consequuntur sequi modi illum",
   1,
   "Sword",
+  "Big Shield",
   "Starting-Card",
   0,
   5,
@@ -81,6 +111,7 @@ export const tripleStrike = new Attack(
   "Strikes the opponent 3 times in quick succession",
   2,
   "Dagger",
+  "Big Sword",
   "Rare",
   100,
   4,
@@ -92,6 +123,7 @@ export const lowBlow = new Attack(
   "sweep the legs baby",
   1,
   "Dagger",
+  "Big Shield",
   "Common",
   55,
   5,
@@ -103,6 +135,7 @@ export const stab = new Attack(
   "Stabby stabby",
   2,
   "Sword",
+  "Small Weapon",
   "Common",
   50,
   10,
@@ -116,6 +149,7 @@ export const sideLunge = new Attack(
   "longSword",
   1,
   "Long Sword",
+  "Small Weapon",
   "Rare",
   125,
   7,
@@ -127,6 +161,7 @@ export const runningLunge = new Attack(
   "longSword",
   2,
   "Long Sword",
+  "Big Shield",
   "Rare",
   125,
   13,
@@ -138,6 +173,7 @@ export const crossSwipe = new Attack(
   "longSword",
   1,
   "Long Sword",
+  "Small Weapon",
   "Common",
   45,
   5,
@@ -149,6 +185,7 @@ export const weaponBash = new Attack(
   "bashing them with shield :)",
   1,
   "Big Shield",
+  "Small Weapon",
   "Common",
   50,
   5,
@@ -160,17 +197,19 @@ export const kneeBreaker = new Attack(
   "quick check to the knees",
   1,
   "Small Shield",
+  "Big Wepaon",
   "Common",
   40,
   3,
   2
 );
 
-export const bruteForceCharge = new Attack(
-  "Brute Force Charge",
+export const bruteCharge = new Attack(
+  "Brute Charge",
   "Running through enemy",
   2,
   "Small Shield",
+  "Big Shield",
   "Common",
   90,
   9,
@@ -182,6 +221,7 @@ export const quickScratch = new Attack(
   "claws",
   1,
   "Claws",
+  "Big Shield",
   "Common",
   45,
   6,
@@ -193,6 +233,7 @@ export const bloodyMess = new Attack(
   "claws",
   2,
   "Claws",
+  "Small Shield",
   "Rare",
   110,
   3,
@@ -205,6 +246,7 @@ export const defend = new Block(
   "defend description",
   1,
   "Big Shield",
+  "Big Weapon",
   "Starting-Card",
   0,
   4
@@ -215,6 +257,7 @@ export const blockStance = new Block(
   "blockstance description",
   1,
   "Sword",
+  "Big Weapon",
   "Common",
   30,
   5
@@ -225,6 +268,7 @@ export const wall = new Block(
   "user hides behind shield",
   2,
   "Big Shield",
+  "Small Weapon",
   "Common",
   30,
   10
@@ -235,18 +279,29 @@ export const quickBlock = new Block(
   "qb",
   1,
   "Small Shield",
+  "Big Shield",
   "Rare",
   75,
   7
 );
 
-export const parry = new Block("Parry", "pp", 1, "Dagger", "Rare", 95, 7);
+export const parry = new Block(
+  "Parry",
+  "pp",
+  1,
+  "Dagger",
+  "Big Weapon",
+  "Rare",
+  95,
+  7
+);
 
 export const barricade = new Block(
   "Barricade",
   "pp",
   2,
   "Big shield",
+  "Medium Weapon",
   "Rare",
   100,
   11
@@ -257,6 +312,7 @@ export const dualHandedBlock = new Block(
   "dhb",
   2,
   "Sword",
+  "Small Weapon",
   "Rare",
   100,
   11
@@ -272,7 +328,7 @@ export const playerMoveArray = [
   crossSwipe,
   weaponBash,
   kneeBreaker,
-  bruteForceCharge,
+  bruteCharge,
   quickScratch,
   bloodyMess,
   blockStance,

@@ -3,6 +3,18 @@ import React, { Component } from "react";
 class fightBoard extends Component {
   state = {};
 
+  getSynergyClassName = moveSynergy => {
+    if (moveSynergy === this.props.playerWeapon.name) {
+      return "synergy-item";
+    }
+  };
+
+  getConflictClassName = moveConflict => {
+    if (moveConflict === this.props.playerWeapon.category) {
+      return "conflict-item";
+    }
+  };
+
   getManaClassForCard(manaCost) {
     let manaClass = "card-mana-cost ";
     if (manaCost > this.props.currentMana) {
@@ -105,13 +117,12 @@ class fightBoard extends Component {
                 </li>
                 <span>
                   <li>
-                    Damage Multiplier:
-                    {this.props.playerWeapon.damageMultiplier}
+                    Dmg Multiplier: {this.props.playerWeapon.damageMultiplier}
                   </li>
                   <li>
-                    Block Multiplier:
-                    {this.props.playerWeapon.blockMultiplier}
+                    Block Multiplier: {this.props.playerWeapon.blockMultiplier}
                   </li>
+                  <li>Cateogry: {this.props.playerWeapon.category}</li>
                 </span>
               </ul>
             </div>
@@ -152,7 +163,24 @@ class fightBoard extends Component {
                           </span>
                         </li>
                         <li>
-                          <span>Synergy: {move.synergyItem}</span>
+                          Synergy:{" "}
+                          <span
+                            className={this.getSynergyClassName(
+                              move.synergyItem
+                            )}
+                          >
+                            {move.synergyItem}
+                          </span>
+                        </li>
+                        <li>
+                          Conflict:{" "}
+                          <span
+                            className={this.getConflictClassName(
+                              move.conflictCategory
+                            )}
+                          >
+                            {move.conflictCategory}
+                          </span>
                         </li>
                       </span>
                     </ul>
@@ -187,7 +215,24 @@ class fightBoard extends Component {
                           </span>
                         </li>
                         <li>
-                          <span>Synergy: {move.synergyItem}</span>
+                          Synergy:{" "}
+                          <span
+                            className={this.getSynergyClassName(
+                              move.synergyItem
+                            )}
+                          >
+                            {move.synergyItem}
+                          </span>
+                        </li>
+                        <li>
+                          Conflict:{" "}
+                          <span
+                            className={this.getConflictClassName(
+                              move.conflictCategory
+                            )}
+                          >
+                            {move.conflictCategory}
+                          </span>
                         </li>
                       </span>
                     </ul>
