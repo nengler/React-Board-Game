@@ -46,10 +46,10 @@ class Game extends Component {
     chatMessage: "",
     treasure: treasure,
     shop: shop,
-    randomEvents: randomEventHolder
+    randomEvents: randomEventHolder,
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     let player = this.state.player;
     player.setPlayerName(event.target.value);
     this.setState({ player });
@@ -104,7 +104,7 @@ class Game extends Component {
       gameBoard.height
     );
     let position = (gameBoard.board.length - 1) / 2;
-    stepDirections.forEach(step => {
+    stepDirections.forEach((step) => {
       switch (step) {
         case "N":
           position -= gameBoard.width;
@@ -212,7 +212,7 @@ class Game extends Component {
       Math.floor(spacesPerDirection / 2) - 1
     );
     bigActivities = this.randomizer(bigActivities);
-    primaryDirections.forEach(direction => {
+    primaryDirections.forEach((direction) => {
       gameBoard = this.createPath(gameBoard, direction, activitiesObject);
     });
     gameBoard = this.connectPrimaries(
@@ -341,11 +341,11 @@ class Game extends Component {
       enemiesContainer,
       bossContainer,
       randomEventEnemiesContainer,
-      randomEvents
+      randomEvents,
     });
   };
 
-  addToChatBox = message => {
+  addToChatBox = (message) => {
     let chatMessage = this.state.chatMessage;
     chatMessage += message + "\n";
     this.setState({ chatMessage }, () => {
@@ -356,7 +356,7 @@ class Game extends Component {
     });
   };
 
-  handleSquareProperty = square => {
+  handleSquareProperty = (square) => {
     let player = this.state.player;
     let screen = this.state.screen;
     switch (square) {
@@ -451,7 +451,7 @@ class Game extends Component {
     }
   };
 
-  checkIfLegalSquare = position => {
+  checkIfLegalSquare = (position) => {
     let gameBoard = this.state.gameBoard;
     if (position < 0 || position >= gameBoard.board.length) {
       return false;
@@ -461,7 +461,7 @@ class Game extends Component {
     return true;
   };
 
-  arrowKeyMovement = e => {
+  arrowKeyMovement = (e) => {
     if (this.state.screen.characterMoving === true) {
       let position = this.state.player.playerPosition;
       let square = "";
@@ -604,7 +604,7 @@ class Game extends Component {
       screen,
       currentEnemy,
       treasure,
-      player
+      player,
     });
   }
 
@@ -655,7 +655,7 @@ class Game extends Component {
     }
   };
 
-  handleDiscard = moveToDiscard => {
+  handleDiscard = (moveToDiscard) => {
     let player = this.state.player;
     let screen = this.state.screen;
     player.discardCard(moveToDiscard);
@@ -673,7 +673,7 @@ class Game extends Component {
     this.setState({ screen });
   }
 
-  handleTreasureClick = treasureItem => {
+  handleTreasureClick = (treasureItem) => {
     let player = this.state.player;
     let screen = this.state.screen;
     let treasure = this.state.treasure;
@@ -745,7 +745,7 @@ class Game extends Component {
     this.setState({ screen });
   };
 
-  handleRestClick = player => {
+  handleRestClick = (player) => {
     player.fullHeal();
     let screen = this.state.screen;
     screen.moveCharacter();
@@ -827,7 +827,6 @@ class Game extends Component {
   };
 
   handleGoToNextFloor = () => {
-    console.log("heyo");
     let gameBoard = this.state.gameBoard;
     let player = this.state.player;
     let screen = this.state.screen;
@@ -873,7 +872,7 @@ class Game extends Component {
                 value={this.state.playerName}
                 onChange={this.handleChange}
                 placeholder="Enter Name And Start Game"
-                onKeyPress={event => {
+                onKeyPress={(event) => {
                   if (event.key === "Enter" && !disableStart) {
                     this.startGame();
                   }

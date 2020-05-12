@@ -1,15 +1,16 @@
 import React, { Component } from "react";
+import sword from "../assets/imgs/sword3.png";
 
 class fightBoard extends Component {
   state = {};
 
-  getSynergyClassName = moveSynergy => {
+  getSynergyClassName = (moveSynergy) => {
     if (moveSynergy === this.props.playerWeapon.name) {
       return "synergy-item";
     }
   };
 
-  getConflictClassName = moveConflict => {
+  getConflictClassName = (moveConflict) => {
     if (moveConflict === this.props.playerWeapon.category) {
       return "conflict-item";
     }
@@ -25,19 +26,19 @@ class fightBoard extends Component {
     return manaClass;
   }
 
-  getTextStyle = lengthOfHealthBar => {
+  getTextStyle = (lengthOfHealthBar) => {
     try {
       let lengthOfTextDiv = document.getElementById("text-health-id")
         .offsetWidth;
       let textPosition = lengthOfHealthBar / 2 - lengthOfTextDiv / 2;
       const textDivPosition = {
-        left: textPosition
+        left: textPosition,
       };
       return textDivPosition;
     } catch {}
   };
 
-  getEnemyMoveStyle = moveType => {
+  getEnemyMoveStyle = (moveType) => {
     let typeStyle = {};
     switch (moveType) {
       case "Attack":
@@ -57,6 +58,21 @@ class fightBoard extends Component {
     return " " + damage + " ";
   };
 
+  handleAttackClick = (move) => {
+    let sword = document.getElementById(move.name);
+    //sword.style.display = "block";
+    sword.style.opacity = "1";
+    this.props.onAttackCardClick(
+      this.props.enemy,
+      move,
+      this.props.playerWeapon,
+      this.props.currentMana
+    );
+    setTimeout(() => {
+      sword.style.opacity = "0";
+    }, 300);
+  };
+
   render() {
     let enemyMove = this.props.enemy.getCurrentMove();
     const lengthOfHealthBar = 200;
@@ -69,7 +85,7 @@ class fightBoard extends Component {
     }
     let healthBarWidth = {
       width: hpWidth,
-      backgroundColor: color
+      backgroundColor: color,
     };
 
     return (
@@ -97,7 +113,7 @@ class fightBoard extends Component {
               </div>
             </li>
             <li>
-              <span className="next-enemy-move">Next Enemy Move: </span>
+              <span className="next-enemy-move">Enemy Move: </span>
               <span
                 className="next-enemy-move"
                 style={this.getEnemyMoveStyle(enemyMove.constructor.name)}
@@ -133,16 +149,9 @@ class fightBoard extends Component {
               {this.props.playerMoves.map((move, index) =>
                 move.constructor.name === "Attack" ? (
                   <div
-                    className="inside-card "
-                    key={index}
-                    onClick={() =>
-                      this.props.onAttackCardClick(
-                        this.props.enemy,
-                        move,
-                        this.props.playerWeapon,
-                        this.props.currentMana
-                      )
-                    }
+                    className="inside-card move-details"
+                    key={move.name}
+                    onClick={() => this.handleAttackClick(move)}
                   >
                     <ul>
                       <li className="card-header-fight attack-card">
@@ -184,10 +193,16 @@ class fightBoard extends Component {
                         </li>
                       </span>
                     </ul>
+                    <img
+                      alt=""
+                      src={sword}
+                      id={move.name}
+                      className="animation-sword"
+                    />
                   </div>
                 ) : (
                   <div
-                    className="inside-card "
+                    className="inside-card move-details"
                     key={index}
                     onClick={() =>
                       this.props.onBlockCardClick(
@@ -257,7 +272,7 @@ class fightBoard extends Component {
           </div>
         </div>
 
-        <div>
+        <div className="mana-and-block">
           <span
             className={`${
               this.props.currentMana > 0 ? "useable" : "not-useable"

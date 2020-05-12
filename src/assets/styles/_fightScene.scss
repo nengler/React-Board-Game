@@ -43,6 +43,7 @@
   position: absolute;
   top: 0;
   left: 0;
+  transition: width 0.5s;
 }
 
 .enemy-health-text {
@@ -76,6 +77,7 @@ ul {
 }
 
 .card-header-fight {
+  //color: white;
   border-bottom: 1px solid black;
   font-weight: bolder;
   font-size: 1.5rem;
@@ -97,10 +99,12 @@ ul {
 
 .useable {
   color: $useable;
+  transition: 0.5s all;
 }
 
 .not-useable {
   color: $disabled;
+  transition: 0.5s all;
 }
 
 .show-mana {
@@ -121,6 +125,11 @@ ul {
   font-size: 1.25rem;
 }
 
+.mana-and-block {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+}
+
 .synergy-item {
   text-decoration: underline;
   text-decoration-color: #e18728;
@@ -129,4 +138,20 @@ ul {
 .conflict-item {
   text-decoration: underline;
   text-decoration-color: darkblue;
+}
+
+.animation-sword {
+  display: block;
+  position: absolute;
+  height: 3rem;
+  left: 40%;
+  width: 3rem;
+  top: 40%;
+  opacity: 0;
+  transition: 0.3s all;
+  background-color: transparent;
+}
+
+.move-details {
+  position: relative;
 }

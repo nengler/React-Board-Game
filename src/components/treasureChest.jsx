@@ -32,6 +32,9 @@ class TreasureChest extends Component {
                       <li>
                         <span>Synergy: {treasure.synergyItem}</span>
                       </li>
+                      <li>
+                        <span>Synergy: {treasure.conflictCategory}</span>
+                      </li>
                     </span>
                   </ul>
                 </div>
@@ -52,6 +55,9 @@ class TreasureChest extends Component {
                       <li>
                         <span>Synergy: {treasure.synergyItem}</span>
                       </li>
+                      <li>
+                        <span>Conflict: {treasure.conflictCategory}</span>
+                      </li>
                     </span>
                   </ul>
                 </div>
@@ -65,6 +71,7 @@ class TreasureChest extends Component {
                     <span>
                       <li>Damage Multiplier: {treasure.damageMultiplier}</li>
                       <li>Block Multiplier: {treasure.blockMultiplier}</li>
+                      <li>Category: {treasure.category}</li>
                     </span>
                   </ul>
                 </div>
