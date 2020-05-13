@@ -49,6 +49,7 @@ class fightBoard extends Component {
   };
 
   getEnemyMoveStyle = (moveType) => {
+    console.log(moveType);
     let typeStyle = {};
     switch (moveType) {
       case "Attack":
