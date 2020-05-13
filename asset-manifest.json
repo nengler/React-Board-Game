@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/React-Board-Game/static/css/main.2ab67446.chunk.css",
-    "main.js": "/React-Board-Game/static/js/main.f4f14106.chunk.js",
-    "main.js.map": "/React-Board-Game/static/js/main.f4f14106.chunk.js.map",
+    "main.js": "/React-Board-Game/static/js/main.3d8dfa70.chunk.js",
+    "main.js.map": "/React-Board-Game/static/js/main.3d8dfa70.chunk.js.map",
     "runtime-main.js": "/React-Board-Game/static/js/runtime-main.37ee9245.js",
     "runtime-main.js.map": "/React-Board-Game/static/js/runtime-main.37ee9245.js.map",
     "static/css/2.2f8cf4e0.chunk.css": "/React-Board-Game/static/css/2.2f8cf4e0.chunk.css",
     "static/js/2.fb95b229.chunk.js": "/React-Board-Game/static/js/2.fb95b229.chunk.js",
     "static/js/2.fb95b229.chunk.js.map": "/React-Board-Game/static/js/2.fb95b229.chunk.js.map",
     "index.html": "/React-Board-Game/index.html",
-    "precache-manifest.2ede13b9922a5a5f5929c85b0e0f57c4.js": "/React-Board-Game/precache-manifest.2ede13b9922a5a5f5929c85b0e0f57c4.js",
+    "precache-manifest.4f296bd97c39c45786fa0b52dbfbb13a.js": "/React-Board-Game/precache-manifest.4f296bd97c39c45786fa0b52dbfbb13a.js",
     "service-worker.js": "/React-Board-Game/service-worker.js",
     "static/css/2.2f8cf4e0.chunk.css.map": "/React-Board-Game/static/css/2.2f8cf4e0.chunk.css.map",
     "static/css/main.2ab67446.chunk.css.map": "/React-Board-Game/static/css/main.2ab67446.chunk.css.map",
@@ -22,6 +22,6 @@
     "static/css/2.2f8cf4e0.chunk.css",
     "static/js/2.fb95b229.chunk.js",
     "static/css/main.2ab67446.chunk.css",
-    "static/js/main.f4f14106.chunk.js"
+    "static/js/main.3d8dfa70.chunk.js"
   ]
 }
