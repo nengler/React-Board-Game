@@ -89,6 +89,21 @@ textarea {
   height: 17%;
 }
 
+.chatbox {
+  resize: none;
+}
+
+.death-screen {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.death-header {
+  margin-bottom: 1rem;
+}
+
 @media only screen and (max-width: 600px) {
   .homepage-centering {
     width: 100%;

@@ -43,6 +43,7 @@ class Shop extends Component {
                         Damage: {shopItem.damage} X {shopItem.amountOfHits}
                       </li>
                       <li>Synergy: {shopItem.synergyItem}</li>
+                      <li>Conflict: {shopItem.conflictCategory}</li>
                     </span>
                   </ul>
                 </div>
@@ -71,6 +72,7 @@ class Shop extends Component {
                       <li>
                         <span>Synergy: {shopItem.synergyItem}</span>
                       </li>
+                      <li>Conflict: {shopItem.conflictCategory}</li>
                     </span>
                   </ul>
                 </div>
@@ -92,6 +94,7 @@ class Shop extends Component {
                       </li>
                       <li>Damage Multiplier: {shopItem.damageMultiplier}</li>
                       <li>Block Multiplier: {shopItem.blockMultiplier}</li>
+                      <li>Category: {shopItem.category}</li>
                     </span>
                   </ul>
                 </div>

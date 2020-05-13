@@ -36,10 +36,10 @@ class MovesInventory extends Component {
               <br />
               {move.constructor.name === "Attack" ? (
                 <span>
-                  Damage: {move.damage}X{move.amountOfHits}
+                  Base Damage: {move.damage}X{move.amountOfHits}
                 </span>
               ) : (
-                <span>Block: {move.blockAmount}</span>
+                <span>Base Block: {move.blockAmount}</span>
               )}
               <div className="hover-details">
                 Synergy: {move.synergyItem}

@@ -33,7 +33,7 @@ class TreasureChest extends Component {
                         <span>Synergy: {treasure.synergyItem}</span>
                       </li>
                       <li>
-                        <span>Synergy: {treasure.conflictCategory}</span>
+                        <span>Conflict: {treasure.conflictCategory}</span>
                       </li>
                     </span>
                   </ul>

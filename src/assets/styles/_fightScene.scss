@@ -6,9 +6,14 @@
   cursor: pointer;
   margin: 0 0.5rem;
   position: relative;
+  user-select: none; /* supported by Chrome and Opera */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none;
 
   li {
-    padding: 0 10px;
+    padding: 0 0.5rem;
   }
 }
 
@@ -82,6 +87,11 @@ ul {
   font-weight: bolder;
   font-size: 1.5rem;
   margin-bottom: 0;
+  padding: 0.5rem !important;
+}
+
+.weapon-details-fight {
+  margin-top: 0.25rem;
 }
 
 .card-description {
@@ -143,10 +153,10 @@ ul {
 .animation-sword {
   display: block;
   position: absolute;
-  height: 3rem;
-  left: 40%;
-  width: 3rem;
-  top: 40%;
+  height: 5rem;
+  left: 30%;
+  width: 5rem;
+  top: 35%;
   opacity: 0;
   transition: 0.3s all;
   background-color: transparent;
@@ -154,4 +164,18 @@ ul {
 
 .move-details {
   position: relative;
+}
+
+.test {
+  background: transparent;
+}
+
+.increased-damage {
+  color: $high-health;
+  font-weight: bold;
+}
+
+.decreased-damage {
+  color: $low-health;
+  font-weight: bold;
 }

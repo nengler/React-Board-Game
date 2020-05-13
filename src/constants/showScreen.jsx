@@ -17,9 +17,10 @@ class ShowScreen {
     this.characterRest = false;
     this.randomEvent = false;
     this.goToNextFloor = false;
+    this.characterDied = false;
   }
   makeAllValuesFalse() {
-    Object.keys(this).forEach(key => {
+    Object.keys(this).forEach((key) => {
       this[key] = false;
     });
   }
@@ -60,6 +61,10 @@ class ShowScreen {
     this.characterRest = true;
   }
   characterDeath() {
+    this.makeAllValuesFalse();
+    this.characterDied = true;
+  }
+  startANewGame() {
     this.makeAllValuesFalse();
     this.createCharacter = true;
   }

@@ -1,15 +1,20 @@
 import {
+  dualBlock,
+  runningLunge,
+  tripleStrike,
+  strike,
+  parry,
   nullBoy,
   quickScratch,
   defend,
   slither,
-  quickBlock,
-  sideLunge,
+  wall,
   kneeBreaker,
   lowBlow,
-  crossSwipe
+  crossSwipe,
+  planning,
 } from "../constants/moves";
-import { claws, longSword } from "../constants/weapons";
+import { claws, longSword, dagger, teeth } from "../constants/weapons";
 
 export class Monster {
   constructor(
@@ -60,6 +65,8 @@ export class Monster {
 
 //MONSTERS
 
+//first level
+
 const cockRoach = new Monster(
   "CockRoach",
   25,
@@ -71,20 +78,57 @@ const cockRoach = new Monster(
 );
 const worm = new Monster("Worm", 17, claws, [slither], 1, false, [1, 25]);
 
-export const enemies = [cockRoach, worm];
+//Second Level
+
+const theif = new Monster(
+  "Theif",
+  40,
+  dagger,
+  [planning, tripleStrike, parry],
+  2,
+  false,
+  [1, 60]
+);
+
+const spider = new Monster(
+  "Spider",
+  40,
+  teeth,
+  [strike, quickScratch, defend],
+  2,
+  false,
+  [10, 30]
+);
+
+export const enemies = [cockRoach, worm, theif, spider];
 
 //BOSSES
 
+//first level
+
 const redDevil = new Monster(
   "Red Devil",
-  1,
+  60,
   claws,
-  [quickBlock, sideLunge],
+  [wall, quickScratch, runningLunge],
   1,
   true,
   [50, 100]
 );
-export const bosses = [redDevil];
+
+//second level
+
+const bigDaddy = new Monster(
+  "Big Daddy",
+  50,
+  longSword,
+  [dualBlock, runningLunge, lowBlow],
+  2,
+  true,
+  [50, 100]
+);
+
+export const bosses = [redDevil, bigDaddy];
 
 //RANDOM EVENT ENEMIES
 

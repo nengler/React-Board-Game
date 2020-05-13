@@ -1,8 +1,18 @@
 import React, { Component } from "react";
-import sword from "../assets/imgs/sword3.png";
+import sword from "../assets/imgs/sword5.png";
+import shield from "../assets/imgs/shield3.png";
 
 class fightBoard extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {
+      turn: 1,
+    };
+  }
+
+  componentDidMount() {
+    this.props.handleChatBox("--- TURN " + this.state.turn + " ---");
+  }
 
   getSynergyClassName = (moveSynergy) => {
     if (moveSynergy === this.props.playerWeapon.name) {
@@ -53,24 +63,63 @@ class fightBoard extends Component {
     return typeStyle;
   };
 
-  getActualDamage = (moveAmount, multiplier) => {
+  getActualDamage = (moveAmount, multiplier, moveSynergy, moveConflict) => {
     let damage = Math.floor(moveAmount * multiplier);
-    return " " + damage + " ";
+    if (this.props.playerWeapon.name === moveSynergy) {
+      damage = Math.ceil(damage * 1.5);
+      return <span className="increased-damage"> {damage} </span>;
+    } else if (this.props.playerWeapon.category === moveConflict) {
+      damage = Math.floor(damage * 0.75);
+      return <span className="decreased-damage"> {damage} </span>;
+    }
+    return <span> {damage} </span>;
+  };
+
+  handleDefendClick = (move) => {
+    if (move.manaCost <= this.props.currentMana) {
+      let shield = document.getElementById(move.name);
+      shield.style.opacity = "1";
+      this.props.onBlockCardClick(
+        move,
+        this.props.playerWeapon,
+        this.props.currentMana
+      );
+      setTimeout(() => {
+        shield.style.opacity = "0";
+      }, 300);
+    } else {
+      this.props.handleChatBox("not enough mana");
+    }
   };
 
   handleAttackClick = (move) => {
-    let sword = document.getElementById(move.name);
-    //sword.style.display = "block";
-    sword.style.opacity = "1";
-    this.props.onAttackCardClick(
-      this.props.enemy,
-      move,
-      this.props.playerWeapon,
-      this.props.currentMana
+    if (move.manaCost <= this.props.currentMana) {
+      let sword = document.getElementById(move.name);
+      //sword.style.display = "block";
+      sword.style.opacity = "1";
+      this.props.onAttackCardClick(
+        this.props.enemy,
+        move,
+        this.props.playerWeapon,
+        this.props.currentMana
+      );
+      setTimeout(() => {
+        sword.style.opacity = "0";
+      }, 300);
+    } else {
+      this.props.handleChatBox("not enough mana");
+    }
+  };
+
+  handleEndTurn = (enemyMove) => {
+    this.props.onEnemyAttack(
+      enemyMove,
+      this.props.block,
+      this.props.enemy.weapon
     );
-    setTimeout(() => {
-      sword.style.opacity = "0";
-    }, 300);
+    this.setState({ turn: this.state.turn + 1 }, () =>
+      this.props.handleChatBox("--- TURN " + this.state.turn + " ---")
+    );
   };
 
   render() {
@@ -131,15 +180,13 @@ class fightBoard extends Component {
                 <li className="card-header-fight weapon-reward">
                   {this.props.playerWeapon.name}
                 </li>
-                <span>
-                  <li>
-                    Dmg Multiplier: {this.props.playerWeapon.damageMultiplier}
-                  </li>
-                  <li>
-                    Block Multiplier: {this.props.playerWeapon.blockMultiplier}
-                  </li>
-                  <li>Cateogry: {this.props.playerWeapon.category}</li>
-                </span>
+                <li>
+                  Dmg Multiplier: {this.props.playerWeapon.damageMultiplier}
+                </li>
+                <li>
+                  Block Multiplier: {this.props.playerWeapon.blockMultiplier}
+                </li>
+                <li>Cateogry: {this.props.playerWeapon.category}</li>
               </ul>
             </div>
           </div>
@@ -166,7 +213,9 @@ class fightBoard extends Component {
                             Damage:
                             {this.getActualDamage(
                               move.damage,
-                              this.props.playerWeapon.damageMultiplier
+                              this.props.playerWeapon.damageMultiplier,
+                              move.synergyItem,
+                              move.conflictCategory
                             )}
                             X {move.amountOfHits}
                           </span>
@@ -204,13 +253,7 @@ class fightBoard extends Component {
                   <div
                     className="inside-card move-details"
                     key={index}
-                    onClick={() =>
-                      this.props.onBlockCardClick(
-                        move,
-                        this.props.playerWeapon,
-                        this.props.currentMana
-                      )
-                    }
+                    onClick={() => this.handleDefendClick(move)}
                   >
                     <ul>
                       <li className="card-header-fight block-card">
@@ -225,7 +268,9 @@ class fightBoard extends Component {
                             Block:
                             {this.getActualDamage(
                               move.blockAmount,
-                              this.props.playerWeapon.blockMultiplier
+                              this.props.playerWeapon.blockMultiplier,
+                              move.synergyItem,
+                              move.conflictCategory
                             )}
                           </span>
                         </li>
@@ -251,6 +296,12 @@ class fightBoard extends Component {
                         </li>
                       </span>
                     </ul>
+                    <img
+                      alt=""
+                      src={shield}
+                      id={move.name}
+                      className="animation-sword"
+                    />
                   </div>
                 )
               )}
@@ -259,13 +310,7 @@ class fightBoard extends Component {
           <div className="end-turn-button">
             <button
               className="btn btn-primary end-turn-button"
-              onClick={() =>
-                this.props.onEnemyAttack(
-                  enemyMove,
-                  this.props.block,
-                  this.props.enemy.weapon
-                )
-              }
+              onClick={() => this.handleEndTurn(enemyMove)}
             >
               End turn
             </button>

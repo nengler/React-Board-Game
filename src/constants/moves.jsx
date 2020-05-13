@@ -70,6 +70,18 @@ class Block extends Move {
 
 //ATTACKS
 
+export const planning = new Attack(
+  "Planning",
+  "",
+  1,
+  "None",
+  "None",
+  "Common",
+  100,
+  0,
+  1
+);
+
 export const nullBoy = new Attack(
   "Null Boy",
   "Relaxing time :)",
@@ -142,7 +154,17 @@ export const stab = new Attack(
   1
 );
 
-export const elbow = new Attack("Elbow", "", 1, "", "Common", 25, 5, 1);
+export const elbow = new Attack(
+  "Elbow",
+  "",
+  1,
+  "None",
+  "None",
+  "Common",
+  25,
+  5,
+  1
+);
 
 export const sideLunge = new Attack(
   "Side Lunge",
@@ -184,7 +206,7 @@ export const weaponBash = new Attack(
   "Weapon Bash",
   "bashing them with shield :)",
   1,
-  "Big Shield",
+  "Kite Shield",
   "Small Weapon",
   "Common",
   50,
@@ -196,8 +218,8 @@ export const kneeBreaker = new Attack(
   "Knee Breaker",
   "quick check to the knees",
   1,
-  "Small Shield",
-  "Big Wepaon",
+  "Buckler Shield",
+  "Big Weapon",
   "Common",
   40,
   3,
@@ -208,7 +230,7 @@ export const bruteCharge = new Attack(
   "Brute Charge",
   "Running through enemy",
   2,
-  "Small Shield",
+  "Buckler Shield",
   "Big Shield",
   "Common",
   90,
@@ -218,7 +240,7 @@ export const bruteCharge = new Attack(
 
 export const quickScratch = new Attack(
   "Quick Scratch",
-  "claws",
+  "",
   1,
   "Claws",
   "Big Shield",
@@ -230,7 +252,7 @@ export const quickScratch = new Attack(
 
 export const bloodyMess = new Attack(
   "Bloody Mess",
-  "claws",
+  "",
   2,
   "Claws",
   "Small Shield",
@@ -245,7 +267,7 @@ export const defend = new Block(
   "Defend",
   "defend description",
   1,
-  "Big Shield",
+  "Kite Shield",
   "Big Weapon",
   "Starting-Card",
   0,
@@ -267,7 +289,7 @@ export const wall = new Block(
   "Wall",
   "user hides behind shield",
   2,
-  "Big Shield",
+  "Kite Shield",
   "Small Weapon",
   "Common",
   30,
@@ -278,7 +300,7 @@ export const quickBlock = new Block(
   "Quick Block",
   "qb",
   1,
-  "Small Shield",
+  "Buckler Shield",
   "Big Shield",
   "Rare",
   75,
@@ -300,22 +322,22 @@ export const barricade = new Block(
   "Barricade",
   "pp",
   2,
-  "Big shield",
+  "Kite Shield",
   "Medium Weapon",
   "Rare",
   100,
   11
 );
 
-export const dualHandedBlock = new Block(
-  "Dual Handed Block",
+export const dualBlock = new Block(
+  "Dual Block",
   "dhb",
   2,
   "Sword",
   "Small Weapon",
   "Rare",
   100,
-  11
+  10
 );
 
 export const playerMoveArray = [
@@ -336,5 +358,5 @@ export const playerMoveArray = [
   quickBlock,
   parry,
   barricade,
-  dualHandedBlock
+  dualBlock,
 ];

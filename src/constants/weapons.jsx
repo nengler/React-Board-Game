@@ -9,6 +9,10 @@ class Weapon {
   }
 }
 
+//Enemy weapons only
+export const teeth = new Weapon("Teeth", 0.7, 0.7, "Common", 0, "Small Weapon");
+
+//enemy and player weapons
 export const dagger = new Weapon(
   "Dagger",
   0.85,
@@ -65,5 +69,5 @@ export const weaponArray = [
   longSword,
   kiteShield,
   bucklerShield,
-  heaterShield
+  heaterShield,
 ];

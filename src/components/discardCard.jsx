@@ -2,10 +2,10 @@ import React, { Component } from "react";
 
 class discardCard extends Component {
   state = {
-    moveSelectedByIndex: ""
+    moveSelectedByIndex: "",
   };
 
-  getCardOutlineClass = moveIndex => {
+  getCardOutlineClass = (moveIndex) => {
     let cardOutlineClassname = "inside-card discard-card ";
     if (moveIndex === this.state.moveSelectedByIndex) {
       cardOutlineClassname += "card-selected-outline";
@@ -13,7 +13,7 @@ class discardCard extends Component {
     return cardOutlineClassname;
   };
 
-  getCardClass = moveType => {
+  getCardClass = (moveType) => {
     let cardClassName = "card-header-fight ";
     if (moveType === "Attack") {
       cardClassName += "attack-card";
@@ -23,7 +23,7 @@ class discardCard extends Component {
     return cardClassName;
   };
 
-  selectCard = moveSelectedByIndex => {
+  selectCard = (moveSelectedByIndex) => {
     this.setState({ moveSelectedByIndex });
   };
 
@@ -82,6 +82,9 @@ class discardCard extends Component {
                         </li>
                         <li>
                           <span>Synergy: {move.synergyItem}</span>
+                        </li>
+                        <li>
+                          <span>Conflict: {move.conflictCategory}</span>
                         </li>
                       </span>
                     </ul>

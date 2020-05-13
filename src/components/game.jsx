@@ -26,11 +26,7 @@ import { randomEventHolder } from "../constants/randomEvents";
 
 /*
 TODO:
-weapons should have categoies
-moves should have categories they are good or bad with
 monsters shoudl be strong or weak against moves or categories
-make room not completely random with amount of enemies and not enemies
-new category of items: spells (maybe, wait on this)
 might have to make enemies more powerful
 */
 
@@ -342,6 +338,7 @@ class Game extends Component {
       bossContainer,
       randomEventEnemiesContainer,
       randomEvents,
+      chatMessage: "",
     });
   };
 
@@ -382,12 +379,12 @@ class Game extends Component {
         let treasure = this.state.treasure;
         treasure.showCommon();
         treasure.amountToBeShown(3);
-        this.addToChatBox("Player found lootations ");
+        this.addToChatBox(player.playerName + " found lootations ");
         this.setState({ screen, treasure });
         break;
       case "🛒":
         screen.showShop();
-        this.addToChatBox("Player found a shop");
+        this.addToChatBox(player.playerName + " found a shop");
         this.setState({ screen });
         break;
       case "🛏️":
@@ -508,33 +505,36 @@ class Game extends Component {
   handleEnemyAttack(enemyMove, playersBlock, enemyWeapon) {
     let player = this.state.player;
     let currentEnemy = this.state.currentEnemy;
+    let message = "";
     currentEnemy.resetBlock();
     let damage = this.calculateDamage(enemyMove, enemyWeapon);
     playersBlock -= damage;
     if (playersBlock < 0) {
       player.currentHealth += playersBlock;
-      this.addToChatBox(
-        "Player was hit for " +
-          playersBlock * -1 +
-          " damage by " +
-          this.state.currentEnemy.name +
-          "'s " +
-          enemyMove.name
-      );
+      message +=
+        player.playerName +
+        " was hit for " +
+        playersBlock * -1 +
+        " damage by " +
+        this.state.currentEnemy.name +
+        "'s " +
+        enemyMove.name;
     } else {
-      this.addToChatBox("Player blocked all damage");
+      message += player.playerName + " blocked all damage";
     }
     let isPlayerDead = this.checkIfDead(player.currentHealth);
     if (isPlayerDead) {
       let screen = this.state.screen;
       screen.characterDeath();
-      player.handlePlayerDeath();
-      this.setState({ screen, player, currentEnemy });
+      this.setState({ screen, currentEnemy });
+      message +=
+        "\n" + player.playerName + " was slain by " + currentEnemy.name;
     } else {
       player.endTurn();
       currentEnemy.goToNextMove();
       this.setState({ player, currentEnemy });
     }
+    this.addToChatBox(message);
   }
 
   handleEnemyBlock(enemyMove, enemyWeapon) {
@@ -544,7 +544,7 @@ class Game extends Component {
     currentEnemy.increaseBlock(enemyBlock);
     player.endTurn();
     currentEnemy.goToNextMove();
-    this.addToChatBox("Monster Increased block by " + enemyBlock);
+    this.addToChatBox(currentEnemy.name + " Increased block by " + enemyBlock);
     this.setState({ player, currentEnemy });
   }
 
@@ -571,18 +571,14 @@ class Game extends Component {
     return block;
   }
 
-  handleBlockCardClick = (playerMove, playerWeapon, currentMana) => {
-    if (currentMana >= playerMove.manaCost) {
-      let player = this.state.player;
-      let block = this.calculateBlock(playerMove, playerWeapon);
-      player.addBlock(block);
-      let message = "Player increased block by " + block;
-      player.decreaseCurrentMana(playerMove.manaCost);
-      this.setState({ player });
-      this.addToChatBox(message);
-    } else if (currentMana < playerMove.manaCost) {
-      this.addToChatBox("not enough mana");
-    }
+  handleBlockCardClick = (playerMove, playerWeapon) => {
+    let player = this.state.player;
+    let block = this.calculateBlock(playerMove, playerWeapon);
+    player.addBlock(block);
+    let message = player.playerName + " increased block by " + block;
+    player.decreaseCurrentMana(playerMove.manaCost);
+    this.setState({ player });
+    this.addToChatBox(message);
   };
 
   handleEnemyDeath(currentEnemy) {
@@ -609,50 +605,44 @@ class Game extends Component {
   }
 
   calculateDamage(move, weapon) {
-    let damage =
-      Math.floor(move.damage * weapon.damageMultiplier) * move.amountOfHits;
+    let damage = Math.floor(move.damage * weapon.damageMultiplier);
     if (weapon.name === move.synergyItem) {
       damage = Math.ceil(damage * 1.5);
     } else if (weapon.category === move.conflictCategory) {
       damage = Math.floor(damage * 0.75);
     }
-    return damage;
+    return Math.floor(damage * move.amountOfHits);
   }
 
-  handleAttackCardClick = (
-    currentEnemy,
-    playerMove,
-    playerWeapon,
-    currentMana
-  ) => {
-    if (currentMana >= playerMove.manaCost) {
-      let player = this.state.player;
-      let message = "";
-      player.decreaseCurrentMana(playerMove.manaCost);
-      let damage = this.calculateDamage(playerMove, playerWeapon);
-      let enemyBlock = currentEnemy.block;
-      enemyBlock -= damage;
-      if (enemyBlock < 0) {
-        currentEnemy.currentHealth += enemyBlock;
-        message +=
-          "player hit " + currentEnemy.name + " for " + enemyBlock * -1;
-        currentEnemy.resetBlock();
-      } else {
-        message += "Enemy blocked attack";
-        currentEnemy.setBlock(enemyBlock);
-      }
-      let isEnemyDead = this.checkIfDead(currentEnemy.currentHealth);
-      if (isEnemyDead) {
-        this.handleEnemyDeath(currentEnemy);
-        player.endTurn();
-        message += "\n" + currentEnemy.name + " was slain";
-      } else {
-        this.setState({ currentEnemy });
-      }
-      this.addToChatBox(message);
-    } else if (currentMana < playerMove.manaCost) {
-      this.addToChatBox("not enough mana");
+  handleAttackCardClick = (currentEnemy, playerMove, playerWeapon) => {
+    let player = this.state.player;
+    let message = "";
+    player.decreaseCurrentMana(playerMove.manaCost);
+    let damage = this.calculateDamage(playerMove, playerWeapon);
+    let enemyBlock = currentEnemy.block;
+    enemyBlock -= damage;
+    if (enemyBlock < 0) {
+      currentEnemy.currentHealth += enemyBlock;
+      message +=
+        this.state.player.playerName +
+        " hit " +
+        currentEnemy.name +
+        " for " +
+        enemyBlock * -1;
+      currentEnemy.resetBlock();
+    } else {
+      message += "Enemy blocked attack";
+      currentEnemy.setBlock(enemyBlock);
     }
+    let isEnemyDead = this.checkIfDead(currentEnemy.currentHealth);
+    if (isEnemyDead) {
+      this.handleEnemyDeath(currentEnemy);
+      player.endTurn();
+      message += "\n" + currentEnemy.name + " was slain";
+    } else {
+      this.setState({ currentEnemy });
+    }
+    this.addToChatBox(message);
   };
 
   handleDiscard = (moveToDiscard) => {
@@ -749,7 +739,7 @@ class Game extends Component {
     player.fullHeal();
     let screen = this.state.screen;
     screen.moveCharacter();
-    this.addToChatBox("Player healed for full");
+    this.addToChatBox(Player.playerName + " healed for full");
     this.setState({ screen, player });
   };
 
@@ -757,7 +747,7 @@ class Game extends Component {
     player.improveWeapon(category);
     let screen = this.state.screen;
     screen.moveCharacter();
-    this.addToChatBox("Player Improved " + weaponName);
+    this.addToChatBox(Player.playerName + " Improved " + weaponName);
     this.setState({ screen, player });
   };
 
@@ -805,7 +795,7 @@ class Game extends Component {
           } else if (eventAction === "halfHeal" && player.gold >= 50) {
             player.increaseHealth(Math.floor(player.maxHealth / 2));
           } else {
-            this.addToChatBox("player cannot afford selection");
+            this.addToChatBox("Item too expensive");
             backToBoard = false;
             stayInEvent = true;
           }
@@ -831,6 +821,7 @@ class Game extends Component {
     let player = this.state.player;
     let screen = this.state.screen;
     gameBoard.nextLevel();
+    player.fullHeal();
     player.playerPosition = (gameBoard.board.length - 1) / 2;
     gameBoard = this.createFloor(gameBoard);
     screen.moveCharacter();
@@ -845,6 +836,14 @@ class Game extends Component {
 
   contactMe = () => {
     console.log("heyo");
+  };
+
+  playAgain = () => {
+    let player = this.state.player;
+    let screen = this.state.screen;
+    player.handlePlayerDeath();
+    screen.startANewGame();
+    this.setState({ player, screen });
   };
 
   componentDidMount() {
@@ -924,6 +923,7 @@ class Game extends Component {
                       currentMana={this.state.player.currentMana}
                       maxMana={this.state.player.maxMana}
                       block={this.state.player.block}
+                      handleChatBox={this.addToChatBox}
                     />
                   )}
                   {this.state.screen.characterDiscardCard && (
@@ -982,6 +982,23 @@ class Game extends Component {
                       onEventClick={this.handleRandomEventClick}
                     />
                   )}
+                  {this.state.screen.characterDied && (
+                    <div className="death-screen">
+                      <div>
+                        <div className="death-header">
+                          <h1>{this.state.player.playerName} Died</h1>
+                        </div>
+                        <div>
+                          <button
+                            onClick={() => this.playAgain()}
+                            className="btn btn-primary"
+                          >
+                            Play Again
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {this.state.screen.goToNextFloor && (
                     <div className="show-floor-options">
                       <div
@@ -1015,7 +1032,7 @@ class Game extends Component {
                   disabled
                   rows="4"
                   id="chat_id"
-                  className="testt"
+                  className="chatbox"
                 ></textarea>
               </div>
               <div className="col-3"></div>
