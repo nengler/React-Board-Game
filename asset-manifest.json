@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/React-Board-Game/static/css/main.2ab67446.chunk.css",
+    "main.js": "/React-Board-Game/static/js/main.f4f14106.chunk.js",
+    "main.js.map": "/React-Board-Game/static/js/main.f4f14106.chunk.js.map",
+    "runtime-main.js": "/React-Board-Game/static/js/runtime-main.37ee9245.js",
+    "runtime-main.js.map": "/React-Board-Game/static/js/runtime-main.37ee9245.js.map",
+    "static/css/2.2f8cf4e0.chunk.css": "/React-Board-Game/static/css/2.2f8cf4e0.chunk.css",
+    "static/js/2.fb95b229.chunk.js": "/React-Board-Game/static/js/2.fb95b229.chunk.js",
+    "static/js/2.fb95b229.chunk.js.map": "/React-Board-Game/static/js/2.fb95b229.chunk.js.map",
+    "index.html": "/React-Board-Game/index.html",
+    "precache-manifest.2ede13b9922a5a5f5929c85b0e0f57c4.js": "/React-Board-Game/precache-manifest.2ede13b9922a5a5f5929c85b0e0f57c4.js",
+    "service-worker.js": "/React-Board-Game/service-worker.js",
+    "static/css/2.2f8cf4e0.chunk.css.map": "/React-Board-Game/static/css/2.2f8cf4e0.chunk.css.map",
+    "static/css/main.2ab67446.chunk.css.map": "/React-Board-Game/static/css/main.2ab67446.chunk.css.map",
+    "static/js/2.fb95b229.chunk.js.LICENSE.txt": "/React-Board-Game/static/js/2.fb95b229.chunk.js.LICENSE.txt",
+    "static/media/shield3.png": "/React-Board-Game/static/media/shield3.99ed922a.png",
+    "static/media/sword5.png": "/React-Board-Game/static/media/sword5.1e834a22.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.37ee9245.js",
+    "static/css/2.2f8cf4e0.chunk.css",
+    "static/js/2.fb95b229.chunk.js",
+    "static/css/main.2ab67446.chunk.css",
+    "static/js/main.f4f14106.chunk.js"
+  ]
+}
