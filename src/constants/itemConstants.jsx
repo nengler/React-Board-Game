@@ -3,6 +3,7 @@ class Potion {
     this.name = name;
     this.category = category;
     this.affect = affect;
+    this.type = "Potion";
   }
 }
 

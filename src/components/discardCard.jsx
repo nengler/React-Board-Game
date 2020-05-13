@@ -63,7 +63,7 @@ class discardCard extends Component {
                     onClick={() => this.selectCard(index)}
                   >
                     <ul>
-                      <li className={this.getCardClass(move.constructor.name)}>
+                      <li className={this.getCardClass(move.type)}>
                         {move.name}
                       </li>
                       <span>

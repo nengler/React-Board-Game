@@ -23,7 +23,7 @@ class Shop extends Component {
               key={index}
               onClick={() => this.props.onShopClick(shopItem, index)}
             >
-              {shopItem.constructor.name === "Attack" && (
+              {shopItem.type === "Attack" && (
                 <div className="inside-card ">
                   <ul>
                     <li className="card-header-fight attack-card">
@@ -48,7 +48,7 @@ class Shop extends Component {
                   </ul>
                 </div>
               )}
-              {shopItem.constructor.name === "Block" && (
+              {shopItem.type === "Block" && (
                 <div className="inside-card ">
                   <ul>
                     <li className="card-header-fight block-card">
@@ -77,7 +77,7 @@ class Shop extends Component {
                   </ul>
                 </div>
               )}
-              {shopItem.constructor.name === "Weapon" && (
+              {shopItem.type === "Weapon" && (
                 <div className="inside-card ">
                   <ul>
                     <li className="card-header-fight weapon-reward">

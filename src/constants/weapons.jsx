@@ -6,6 +6,7 @@ class Weapon {
     this.rarity = rarity;
     this.cost = cost;
     this.category = category;
+    this.type = "Weapon";
   }
 }
 

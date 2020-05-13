@@ -4,7 +4,7 @@ class MovesInventory extends Component {
   state = {};
 
   getClassName = (move) => {
-    let moveClass = "movePreview " + move.constructor.name;
+    let moveClass = "movePreview " + move.type;
     return moveClass;
   };
 
@@ -34,7 +34,7 @@ class MovesInventory extends Component {
             <li key={move.name} className={this.getClassName(move)}>
               <span className="mana-cost">{move.manaCost}</span> {move.name}
               <br />
-              {move.constructor.name === "Attack" ? (
+              {move.type === "Attack" ? (
                 <span>
                   Base Damage: {move.damage}X{move.amountOfHits}
                 </span>

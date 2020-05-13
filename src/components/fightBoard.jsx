@@ -49,7 +49,6 @@ class fightBoard extends Component {
   };
 
   getEnemyMoveStyle = (moveType) => {
-    console.log(moveType);
     let typeStyle = {};
     switch (moveType) {
       case "Attack":
@@ -166,7 +165,7 @@ class fightBoard extends Component {
               <span className="next-enemy-move">Enemy Move: </span>
               <span
                 className="next-enemy-move"
-                style={this.getEnemyMoveStyle(enemyMove.constructor.name)}
+                style={this.getEnemyMoveStyle(enemyMove.type)}
               >
                 {enemyMove.name}
               </span>
@@ -195,7 +194,7 @@ class fightBoard extends Component {
             <h2 className="info-title">Moves</h2>
             <div className="discard-one-move">
               {this.props.playerMoves.map((move, index) =>
-                move.constructor.name === "Attack" ? (
+                move.type === "Attack" ? (
                   <div
                     className="inside-card move-details"
                     key={move.name}

@@ -41,6 +41,7 @@ class Attack extends Move {
     );
     this.damage = damage;
     this.amountOfHits = amountOfHits;
+    this.type = "Attack";
   }
 }
 
@@ -65,6 +66,7 @@ class Block extends Move {
       cost
     );
     this.blockAmount = blockAmount;
+    this.type = "Block";
   }
 }
 

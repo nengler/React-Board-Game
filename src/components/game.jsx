@@ -487,9 +487,9 @@ class Game extends Component {
 
   handleInventoryClick = (item, index) => {
     let player = this.state.player;
-    if (item.constructor.name === "Potion") {
+    if (item.type === "Potion") {
       player.drinkPotion(item, index);
-    } else if (item.constructor.name === "Weapon") {
+    } else if (item.type === "Weapon") {
       player.changeWeaponFromMenu(item, index);
     }
     this.setState({ player });
@@ -549,7 +549,7 @@ class Game extends Component {
   }
 
   handleEnemyCard = (enemyMove, playersBlock, enemyWeapon) => {
-    switch (enemyMove.constructor.name) {
+    switch (enemyMove.type) {
       case "Attack":
         this.handleEnemyAttack(enemyMove, playersBlock, enemyWeapon);
         break;
@@ -667,15 +667,12 @@ class Game extends Component {
     let player = this.state.player;
     let screen = this.state.screen;
     let treasure = this.state.treasure;
-    if (
-      treasureItem.constructor.name === "Attack" ||
-      treasureItem.constructor.name === "Block"
-    ) {
+    if (treasureItem.type === "Attack" || treasureItem.type === "Block") {
       player.addMove(treasureItem);
       if (player.playerMoves.length > 4) {
         this.handlePlayerInventory();
       }
-    } else if (treasureItem.constructor.name === "Weapon") {
+    } else if (treasureItem.type === "Weapon") {
       let weapon = cloneDeep(treasureItem);
       player.changeWeapon(weapon);
     }
@@ -696,7 +693,7 @@ class Game extends Component {
     if (this.state.player.gold >= shopItem.cost) {
       let player = this.state.player;
       let shop = this.state.shop;
-      switch (shopItem.constructor.name) {
+      switch (shopItem.type) {
         case "Attack":
           player.addMove(shopItem);
           if (player.playerMoves.length > 4) {

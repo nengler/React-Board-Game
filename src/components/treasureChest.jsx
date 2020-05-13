@@ -14,7 +14,7 @@ class TreasureChest extends Component {
               key={index}
               onClick={() => this.props.onTreasureClick(treasure)}
             >
-              {treasure.constructor.name === "Attack" && (
+              {treasure.type === "Attack" && (
                 <div className="inside-card ">
                   <ul>
                     <li className="card-header-fight attack-card">
@@ -39,7 +39,7 @@ class TreasureChest extends Component {
                   </ul>
                 </div>
               )}
-              {treasure.constructor.name === "Block" && (
+              {treasure.type === "Block" && (
                 <div className="inside-card ">
                   <ul>
                     <li className="card-header-fight block-card">
@@ -62,7 +62,7 @@ class TreasureChest extends Component {
                   </ul>
                 </div>
               )}
-              {treasure.constructor.name === "Weapon" && (
+              {treasure.type === "Weapon" && (
                 <div className="inside-card ">
                   <ul>
                     <li className="card-header-fight weapon-reward">
