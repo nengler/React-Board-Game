@@ -6,7 +6,7 @@ class Shop {
     this.isStillInShop = false;
   }
   itemsToAddToShop(items) {
-    items.forEach(item => {
+    items.forEach((item) => {
       this.shopItems.push(item);
     });
     this.shopItems = this.shuffleShop(this.shopItems);
@@ -50,6 +50,9 @@ class Shop {
   }
   stillInShop() {
     this.isStillInShop = true;
+  }
+  exitShop() {
+    this.isStillInShop = false;
   }
 }
 

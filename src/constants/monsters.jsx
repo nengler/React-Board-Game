@@ -13,8 +13,11 @@ import {
   lowBlow,
   crossSwipe,
   planning,
+  blockStance,
+  stab,
+  bruteCharge,
 } from "../constants/moves";
-import { claws, longSword, dagger, teeth } from "../constants/weapons";
+import { claws, longSword, dagger, teeth, sword } from "../constants/weapons";
 
 export class Monster {
   constructor(
@@ -52,6 +55,9 @@ export class Monster {
   resetBlock() {
     this.block = 0;
   }
+  increaseHealth(healthAmount) {
+    this.currentHealth += healthAmount;
+  }
   setBlock(newBlock) {
     this.block = newBlock;
   }
@@ -76,7 +82,18 @@ const cockRoach = new Monster(
   false,
   [10, 30]
 );
+
 const worm = new Monster("Worm", 17, claws, [slither], 1, false, [1, 25]);
+
+const rat = new Monster(
+  "Rat",
+  22,
+  claws,
+  [strike, wall, bruteCharge],
+  1,
+  false,
+  [15, 35]
+);
 
 //Second Level
 
@@ -90,8 +107,8 @@ const theif = new Monster(
   [1, 60]
 );
 
-const spider = new Monster(
-  "Spider",
+const giantSpider = new Monster(
+  "Giant Spider",
   40,
   teeth,
   [strike, quickScratch, defend],
@@ -100,7 +117,17 @@ const spider = new Monster(
   [10, 30]
 );
 
-export const enemies = [cockRoach, worm, theif, spider];
+const goblin = new Monster(
+  "Goblin",
+  30,
+  sword,
+  [strike, stab, blockStance],
+  2,
+  false,
+  [10, 30]
+);
+
+export const enemies = [cockRoach, worm, rat, theif, giantSpider, goblin];
 
 //BOSSES
 

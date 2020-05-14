@@ -71,12 +71,12 @@ class discardCard extends Component {
                           <span>Mana Cost: {move.manaCost}</span>
                         </li>
                         <li>
-                          {move.constructor.name === "Attack" && (
+                          {move.type === "Attack" && (
                             <span>
                               Damage: {move.damage} X {move.amountOfHits}
                             </span>
                           )}
-                          {move.constructor.name === "Block" && (
+                          {move.type === "Block" && (
                             <span>Block: {move.blockAmount}</span>
                           )}
                         </li>

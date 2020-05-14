@@ -72,6 +72,7 @@ class Block extends Move {
 
 //ATTACKS
 
+//enemy attacks
 export const planning = new Attack(
   "Planning",
   "",
@@ -108,6 +109,8 @@ export const slither = new Attack(
   4
 );
 
+//enemy and player attacks
+
 export const strike = new Attack(
   "Strike",
   "description for strike Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab quidem dolorem eaque quam cumque minus, omnis consequuntur sequi modi illum",
@@ -116,7 +119,7 @@ export const strike = new Attack(
   "Big Shield",
   "Starting-Card",
   0,
-  5,
+  4,
   1
 );
 
@@ -140,7 +143,7 @@ export const lowBlow = new Attack(
   "Big Shield",
   "Common",
   55,
-  5,
+  4,
   1
 );
 
@@ -176,7 +179,7 @@ export const sideLunge = new Attack(
   "Small Weapon",
   "Rare",
   125,
-  7,
+  6,
   1
 );
 
@@ -236,7 +239,7 @@ export const bruteCharge = new Attack(
   "Big Shield",
   "Common",
   90,
-  9,
+  10,
   1
 );
 
@@ -262,6 +265,18 @@ export const bloodyMess = new Attack(
   110,
   3,
   5
+);
+
+export const backUp = new Attack(
+  "Back Up",
+  "",
+  1,
+  "Heater Shield",
+  "Small Weapon",
+  "Common",
+  35,
+  5,
+  1
 );
 
 //BLOCKS
@@ -306,7 +321,7 @@ export const quickBlock = new Block(
   "Big Shield",
   "Rare",
   75,
-  7
+  6
 );
 
 export const parry = new Block(
@@ -317,7 +332,7 @@ export const parry = new Block(
   "Big Weapon",
   "Rare",
   95,
-  7
+  6
 );
 
 export const barricade = new Block(
@@ -339,6 +354,17 @@ export const dualBlock = new Block(
   "Small Weapon",
   "Rare",
   100,
+  9
+);
+
+export const sideBlock = new Block(
+  "Side Block",
+  "",
+  2,
+  "Heater Shield",
+  "Small Shield",
+  "Common",
+  50,
   10
 );
 
@@ -361,4 +387,6 @@ export const playerMoveArray = [
   parry,
   barricade,
   dualBlock,
+  backUp,
+  sideBlock,
 ];

@@ -73,6 +73,12 @@ class Player {
   addBlock(blockAmount) {
     this.block += blockAmount;
   }
+  decreaseBlock(blockAmont) {
+    this.block -= blockAmont;
+  }
+  refundMana(manaAmount) {
+    this.currentMana += manaAmount;
+  }
   endTurn() {
     this.block = 0;
     this.currentMana = this.maxMana;

@@ -179,3 +179,14 @@ ul {
   color: $low-health;
   font-weight: bold;
 }
+
+.button-holder-fight {
+  display: flex;
+  flex-flow: column;
+  button:nth-child(1) {
+    margin-bottom: 0.5rem;
+  }
+  button:nth-child(2) {
+    margin-top: 0.5rem;
+  }
+}

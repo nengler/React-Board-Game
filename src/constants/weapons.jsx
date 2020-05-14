@@ -11,7 +11,7 @@ class Weapon {
 }
 
 //Enemy weapons only
-export const teeth = new Weapon("Teeth", 0.7, 0.7, "Common", 0, "Small Weapon");
+export const teeth = new Weapon("Teeth", 1, 1, "Common", 0, "Small Weapon");
 
 //enemy and player weapons
 export const dagger = new Weapon(
@@ -25,7 +25,7 @@ export const dagger = new Weapon(
 export const claws = new Weapon("Claws", 1, 0.5, "Common", 90, "Small Weapon");
 export const sword = new Weapon(
   "Sword",
-  0.9,
+  0.8,
   0.7,
   "Common",
   100,
@@ -49,16 +49,16 @@ export const kiteShield = new Weapon(
 );
 export const bucklerShield = new Weapon(
   "Buckler Shield",
-  0.6,
-  1.0,
+  0.75,
+  0.75,
   "Common",
   120,
   "Small Shield"
 );
 export const heaterShield = new Weapon(
   "Heater Shield",
-  0.7,
-  0.85,
+  0.6,
+  1.0,
   "Common",
   120,
   "Medium Shield"

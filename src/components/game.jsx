@@ -581,11 +581,13 @@ class Game extends Component {
     this.addToChatBox(message);
   };
 
-  handleEnemyDeath(currentEnemy) {
+  handleEnemyDeath(currentEnemy, message) {
     let screen = this.state.screen;
     let treasure = this.state.treasure;
     let player = this.state.player;
-    player.increaseGold(currentEnemy.getMoneyDropped());
+    let money = currentEnemy.getMoneyDropped();
+    player.increaseGold(money);
+    this.addToChatBox(message + " and Dropped " + money + " coints");
     if (currentEnemy.isABoss) {
       screen.showRewads();
       treasure.showRare();
@@ -636,13 +638,13 @@ class Game extends Component {
     }
     let isEnemyDead = this.checkIfDead(currentEnemy.currentHealth);
     if (isEnemyDead) {
-      this.handleEnemyDeath(currentEnemy);
-      player.endTurn();
       message += "\n" + currentEnemy.name + " was slain";
+      this.handleEnemyDeath(currentEnemy, message);
+      player.endTurn();
     } else {
       this.setState({ currentEnemy });
+      this.addToChatBox(message);
     }
-    this.addToChatBox(message);
   };
 
   handleDiscard = (moveToDiscard) => {
@@ -728,8 +730,9 @@ class Game extends Component {
     let screen = this.state.screen;
     let shop = this.state.shop;
     shop.resetItemsToShow();
+    shop.exitShop();
     screen.leaveShop();
-    this.setState({ screen });
+    this.setState({ screen, shop });
   };
 
   handleRestClick = (player) => {
@@ -832,7 +835,7 @@ class Game extends Component {
   };
 
   contactMe = () => {
-    console.log("heyo");
+    window.open("mailto:englernathan@gmail.com");
   };
 
   playAgain = () => {
@@ -841,6 +844,24 @@ class Game extends Component {
     player.handlePlayerDeath();
     screen.startANewGame();
     this.setState({ player, screen });
+  };
+
+  undoLastMove = (move, weapon) => {
+    let player = this.state.player;
+    let enemy = this.state.currentEnemy;
+    let message = player.playerName + " Undid move " + move.name + ", ";
+    player.refundMana(move.manaCost);
+    if (move.type === "Attack") {
+      let damage = this.calculateDamage(move, weapon);
+      enemy.increaseHealth(damage);
+      message += enemy.name + " gained " + damage + " health";
+    } else if (move.type === "Block") {
+      let block = this.calculateBlock(move, weapon);
+      player.decreaseBlock(block);
+      message += player.playerName + " lost " + block + " block";
+    }
+    this.setState({ player, currentEnemy: enemy });
+    this.addToChatBox(message);
   };
 
   componentDidMount() {
@@ -921,6 +942,7 @@ class Game extends Component {
                       maxMana={this.state.player.maxMana}
                       block={this.state.player.block}
                       handleChatBox={this.addToChatBox}
+                      undoLastMove={this.undoLastMove}
                     />
                   )}
                   {this.state.screen.characterDiscardCard && (

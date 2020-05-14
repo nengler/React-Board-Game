@@ -7,6 +7,7 @@ class fightBoard extends Component {
     super(props);
     this.state = {
       turn: 1,
+      movesThisTurn: [],
     };
   }
 
@@ -75,36 +76,32 @@ class fightBoard extends Component {
     return <span> {damage} </span>;
   };
 
-  handleDefendClick = (move) => {
+  handleMoveClick = (move) => {
     if (move.manaCost <= this.props.currentMana) {
-      let shield = document.getElementById(move.name);
-      shield.style.opacity = "1";
-      this.props.onBlockCardClick(
-        move,
-        this.props.playerWeapon,
-        this.props.currentMana
-      );
+      this.setState((state) => {
+        const movesThisTurn = state.movesThisTurn.concat(move);
+        return {
+          movesThisTurn,
+        };
+      });
+      let animation = document.getElementById(move.name);
+      animation.style.opacity = "1";
+      if (move.type === "Attack") {
+        this.props.onAttackCardClick(
+          this.props.enemy,
+          move,
+          this.props.playerWeapon,
+          this.props.currentMana
+        );
+      } else if (move.type === "Block") {
+        this.props.onBlockCardClick(
+          move,
+          this.props.playerWeapon,
+          this.props.currentMana
+        );
+      }
       setTimeout(() => {
-        shield.style.opacity = "0";
-      }, 300);
-    } else {
-      this.props.handleChatBox("not enough mana");
-    }
-  };
-
-  handleAttackClick = (move) => {
-    if (move.manaCost <= this.props.currentMana) {
-      let sword = document.getElementById(move.name);
-      //sword.style.display = "block";
-      sword.style.opacity = "1";
-      this.props.onAttackCardClick(
-        this.props.enemy,
-        move,
-        this.props.playerWeapon,
-        this.props.currentMana
-      );
-      setTimeout(() => {
-        sword.style.opacity = "0";
+        animation.style.opacity = "0";
       }, 300);
     } else {
       this.props.handleChatBox("not enough mana");
@@ -117,12 +114,30 @@ class fightBoard extends Component {
       this.props.block,
       this.props.enemy.weapon
     );
-    this.setState({ turn: this.state.turn + 1 }, () =>
+    this.setState({ turn: this.state.turn + 1, movesThisTurn: [] }, () =>
       this.props.handleChatBox("--- TURN " + this.state.turn + " ---")
     );
   };
 
+  handleUndoMove = () => {
+    let lastElement = this.state.movesThisTurn.length - 1;
+    this.props.undoLastMove(
+      this.state.movesThisTurn[lastElement],
+      this.props.playerWeapon
+    );
+    this.setState((state) => {
+      const movesThisTurn = state.movesThisTurn.filter(
+        (item, j) => lastElement !== j
+      );
+      return {
+        movesThisTurn,
+      };
+    });
+  };
+
   render() {
+    let { movesThisTurn } = this.state;
+    const isAbleToUndo = movesThisTurn.length === 0;
     let enemyMove = this.props.enemy.getCurrentMove();
     const lengthOfHealthBar = 200;
     let hpWidth =
@@ -198,7 +213,7 @@ class fightBoard extends Component {
                   <div
                     className="inside-card move-details"
                     key={move.name}
-                    onClick={() => this.handleAttackClick(move)}
+                    onClick={() => this.handleMoveClick(move)}
                   >
                     <ul>
                       <li className="card-header-fight attack-card">
@@ -253,7 +268,7 @@ class fightBoard extends Component {
                   <div
                     className="inside-card move-details"
                     key={index}
-                    onClick={() => this.handleDefendClick(move)}
+                    onClick={() => this.handleMoveClick(move)}
                   >
                     <ul>
                       <li className="card-header-fight block-card">
@@ -307,12 +322,19 @@ class fightBoard extends Component {
               )}
             </div>
           </div>
-          <div className="end-turn-button">
+          <div className="button-holder-fight">
             <button
               className="btn btn-primary end-turn-button"
               onClick={() => this.handleEndTurn(enemyMove)}
             >
               End turn
+            </button>
+            <button
+              className="btn btn-dark undo-move-button"
+              onClick={() => this.handleUndoMove()}
+              disabled={isAbleToUndo}
+            >
+              Undo Last Move
             </button>
           </div>
         </div>
