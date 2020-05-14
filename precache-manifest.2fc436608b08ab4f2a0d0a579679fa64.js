@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "db18abe53ff14d956047f973d94c05b3",
+    "revision": "a5d63a6af4df622f013f5637fcef0df6",
     "url": "/React-Board-Game/index.html"
   },
   {
@@ -8,8 +8,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/React-Board-Game/static/css/2.2f8cf4e0.chunk.css"
   },
   {
-    "revision": "455303d30f21544c7b95",
-    "url": "/React-Board-Game/static/css/main.2ab67446.chunk.css"
+    "revision": "9da84ad916c7bfa6e629",
+    "url": "/React-Board-Game/static/css/main.2cc61a10.chunk.css"
   },
   {
     "revision": "c22cc8839d602e7e6e39",
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/React-Board-Game/static/js/2.fb95b229.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "455303d30f21544c7b95",
-    "url": "/React-Board-Game/static/js/main.bb9c7b84.chunk.js"
+    "revision": "9da84ad916c7bfa6e629",
+    "url": "/React-Board-Game/static/js/main.52dc6bce.chunk.js"
   },
   {
     "revision": "2240de5bd8a0411902c6",
